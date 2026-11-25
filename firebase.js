@@ -8,7 +8,6 @@ import {
   updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {
   // Replace these placeholders with your actual Firebase project config values
@@ -27,7 +26,6 @@ export const configured =
 export const app = configured ? initializeApp(firebaseConfig) : null;
 export const auth = app ? getAuth(app) : null;
 export const db = app ? getFirestore(app) : null;
-export const storage = app ? getStorage(app) : null;
 
 export async function createAccount(email, password, displayName) {
   if (!auth) throw new Error("Firebase is not configured yet.");
