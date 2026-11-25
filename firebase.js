@@ -7,10 +7,11 @@ import {
   onAuthStateChanged,
   updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {
-  // After creating your fresh Firebase project and registering a Web app,
-  // replace these placeholders with that project's web config values.
+  // Replace these placeholders with your actual Firebase project config values
   apiKey: "PASTE_API_KEY",
   authDomain: "PASTE_PROJECT_ID.firebaseapp.com",
   projectId: "PASTE_PROJECT_ID",
@@ -25,6 +26,8 @@ export const configured =
 
 export const app = configured ? initializeApp(firebaseConfig) : null;
 export const auth = app ? getAuth(app) : null;
+export const db = app ? getFirestore(app) : null;
+export const storage = app ? getStorage(app) : null;
 
 export async function createAccount(email, password, displayName) {
   if (!auth) throw new Error("Firebase is not configured yet.");
