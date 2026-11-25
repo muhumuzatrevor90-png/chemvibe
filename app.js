@@ -1,11 +1,24 @@
 import {
   configured,
   auth,
+  db,
+  storage,
   createAccount,
   signIn,
   signOutCurrentUser,
   observeAuth
 } from "./firebase.js";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const byId = (id) => document.getElementById(id);
 
@@ -15,23 +28,81 @@ function initMenu() {
   });
 }
 
-function initLibrary() {
+async function initLibrary() {
+  const container = byId("resource-list");
+  if (!container) return;
   const search = byId("resource-search");
-  if (!search) return;
-  const cards = [...document.querySelectorAll(".resource-card")];
   const count = byId("resource-count");
   const empty = byId("resource-empty");
   let type = "all";
+  let resources = [];
+
+  if (configured && db) {
+    try {
+      const snapshot = await getDocs(collection(db, "resources"));
+      resources = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+      console.error("Failed to load resources:", error);
+    }
+  }
 
   function render() {
-    const term = search.value.trim().toLowerCase();
+    const term = search ? search.value.trim().toLowerCase() : "";
     let visible = 0;
-    cards.forEach((card) => {
-      const matchesType = type === "all" || card.dataset.type === type;
-      const matchesText = !term || `${card.dataset.search} ${card.innerText}`.toLowerCase().includes(term);
-      card.hidden = !(matchesType && matchesText);
-      if (!card.hidden) visible++;
+    container.innerHTML = "";
+
+    resources.forEach((res) => {
+      const resType = res.type || "Notes";
+      const resTitle = res.title || "Untitled Resource";
+      const resDesc = res.description || "";
+      const resPrice = res.price || "Free";
+
+      const matchesType = type === "all" || resType === type;
+      const matchesText = !term || `${resTitle} ${resDesc} ${resType}`.toLowerCase().includes(term);
+
+      if (matchesType && matchesText) {
+        visible++;
+
+        // Build card safely with DOM methods to prevent XSS
+        const card = document.createElement("article");
+        card.className = "card resource-card";
+
+        const meta = document.createElement("div");
+        meta.className = "card-meta";
+
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = resType.toUpperCase();
+
+        const price = document.createElement("span");
+        price.className = "price";
+        price.textContent = resPrice;
+
+        meta.append(tag, price);
+
+        const titleEl = document.createElement("h3");
+        titleEl.textContent = resTitle;
+
+        const descEl = document.createElement("p");
+        descEl.textContent = resDesc;
+
+        const btn = document.createElement("button");
+        btn.className = "button secondary purchase-button";
+        btn.type = "button";
+        btn.textContent = "View resource";
+        btn.addEventListener("click", () => {
+          if (res.fileUrl) {
+            window.open(res.fileUrl, "_blank", "noopener,noreferrer");
+          } else {
+            alert("File link not available for this resource.");
+          }
+        });
+
+        card.append(meta, titleEl, descEl, btn);
+        container.appendChild(card);
+      }
     });
+
     if (count) count.textContent = `${visible} resources`;
     if (empty) empty.hidden = visible > 0;
   }
@@ -45,10 +116,7 @@ function initLibrary() {
     });
   });
 
-  search.addEventListener("input", render);
-  document.querySelectorAll(".purchase-button").forEach((button) => {
-    button.addEventListener("click", () => alert("Demo listing only. Secure checkout and file delivery will be added after backend setup."));
-  });
+  if (search) search.addEventListener("input", render);
   render();
 }
 
@@ -110,17 +178,65 @@ function initProfile() {
   if (!byId("profile-status")) return;
   const status = byId("profile-status");
   const email = byId("profile-email");
+  const uploadSection = byId("upload-section");
+
   if (!configured) {
     status.textContent = "Firebase is not connected yet.";
     return;
   }
+
   observeAuth((user) => {
     status.textContent = user ? `Signed in as ${user.displayName || "ChemVibe student"}.` : "Not signed in.";
     email.textContent = user?.email || "";
+    if (uploadSection) {
+      uploadSection.hidden = !user;
+    }
   });
+
   byId("signout-button")?.addEventListener("click", async () => {
     await signOutCurrentUser();
     location.href = "index.html";
+  });
+
+  const uploadForm = byId("upload-form");
+  uploadForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const uploadStatus = byId("upload-status");
+    const uploadSubmit = byId("upload-submit");
+    const fileInput = byId("res-file");
+    const file = fileInput.files[0];
+
+    if (!file || !auth.currentUser) return;
+
+    uploadSubmit.disabled = true;
+    uploadStatus.textContent = "Uploading document… please wait.";
+
+    try {
+      // 1. Upload file to Firebase Storage
+      const safeFileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+      const storageRef = ref(storage, `resources/${safeFileName}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+
+      // 2. Save document details to Firestore
+      await addDoc(collection(db, "resources"), {
+        title: byId("res-title").value.trim(),
+        type: byId("res-type").value,
+        price: byId("res-price").value.trim(),
+        description: byId("res-desc").value.trim(),
+        fileUrl: downloadURL,
+        uploadedBy: auth.currentUser.uid,
+        createdAt: serverTimestamp()
+      });
+
+      uploadStatus.textContent = "Success! Document added to the library.";
+      uploadForm.reset();
+    } catch (error) {
+      console.error("Upload error:", error);
+      uploadStatus.textContent = "Upload failed. Ensure Firebase Storage is enabled and rules allow uploads.";
+    } finally {
+      uploadSubmit.disabled = false;
+    }
   });
 }
 
