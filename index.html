@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ChemVibe helps university chemistry students study smarter.">
+  <title>ChemVibe — Chemistry study hub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>ChemVibe</a>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+    <nav class="nav" id="main-nav">
+      <a class="active" href="index.html">Library</a>
+      <a href="blog.html">Blog</a>
+      <a href="classes.html">Live classes</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="profile.html">Profile</a>
+      <a class="nav-button" href="signin.html">Sign in</a>
+    </nav>
+  </header>
+  <main class="container">
+    <section class="hero">
+      <span class="eyebrow">CHEMISTRY, WITH A BETTER VIBE</span>
+      <h1>Make chemistry<br><span>click.</span></h1>
+      <p>Find clear study resources, explore chemistry concepts, and stay on track with your university studies.</p>
+      <a class="button primary" href="#library">Explore resources</a>
+    </section>
+<section class="search-panel">
+  <label class="search-box">
+    <span aria-hidden="true">⌕</span>
+    <input id="resource-search" type="search" placeholder="Search topics or resources">
+  </label>
+  <div class="filter-row">
+    <strong>Resource type</strong>
+    <div class="chips" id="resource-filters">
+      <button class="chip active" data-type="all">All</button>
+      <button class="chip" data-type="Notes">Notes</button>
+      <button class="chip" data-type="Practice">Practice</button>
+      <button class="chip" data-type="Past paper">Past papers</button>
+      <button class="chip" data-type="Guide">Study guides</button>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="library">
+  <div class="section-heading">
+    <div><h2>Chemistry library</h2><p>Sample listings—replace with your own resources and prices.</p></div>
+    <span class="muted" id="resource-count"></span>
+  </div>
+  <div class="card-grid" id="resource-list">
+    <article class="card resource-card" data-type="Notes" data-search="atomic structure orbitals electrons">
+      <div class="card-meta"><span class="tag">NOTES</span><span class="price">UGX 5,000</span></div>
+      <h3>Atomic Structure &amp; Orbitals</h3>
+      <p>Review electron configuration, orbitals, and atomic models.</p>
+      <button class="button secondary purchase-button" type="button">View resource</button>
+    </article>
+    <article class="card resource-card" data-type="Practice" data-search="mole stoichiometry calculations">
+      <div class="card-meta"><span class="tag">PRACTICE</span><span class="price">UGX 4,000</span></div>
+      <h3>Moles &amp; Stoichiometry</h3>
+      <p>Practice mole conversions and balanced-equation calculations.</p>
+      <button class="button secondary purchase-button" type="button">View resource</button>
+    </article>
+    <article class="card resource-card" data-type="Guide" data-search="organic chemistry functional groups">
+      <div class="card-meta"><span class="tag">STUDY GUIDE</span><span class="price">UGX 6,000</span></div>
+      <h3>Organic Functional Groups</h3>
+      <p>Identify common functional groups and review their properties.</p>
+      <button class="button secondary purchase-button" type="button">View resource</button>
+    </article>
+    <article class="card resource-card" data-type="Past paper" data-search="chemistry examination revision past paper">
+      <div class="card-meta"><span class="tag">PAST PAPER</span><span class="price">UGX 8,000</span></div>
+      <h3>Chemistry Exam Practice</h3>
+      <p>Sample listing. Add only exam materials you have permission to sell.</p>
+      <button class="button secondary purchase-button" type="button">View resource</button>
+    </article>
+  </div>
+  <div class="empty-state" id="resource-empty" hidden>No matching resources found.</div>
+  <p class="notice">Demo listings only. Checkout and downloadable files are not connected yet.</p>
+</section>
+
+<section class="section">
+  <div class="section-heading"><div><h2>Keep your study momentum</h2><p>Explore the ChemVibe student space.</p></div></div>
+  <div class="card-grid">
+    <a class="card feature-card" href="blog.html"><span class="feature-icon">✍️</span><h3>Chemistry blog</h3><p>Short explainers for key chemistry concepts.</p><span class="text-link">Read articles →</span></a>
+    <a class="card feature-card" href="classes.html"><span class="feature-icon">🎥</span><h3>Live classes</h3><p>Browse sessions and join with a host-provided link.</p><span class="text-link">View classes →</span></a>
+    <a class="card feature-card" href="signup.html"><span class="feature-icon">⚡</span><h3>Create your account</h3><p>Sign up to start building your ChemVibe profile.</p><span class="text-link">Get started →</span></a>
+  </div>
+</section>
+
+  </main>
+  <footer class="footer">ChemVibe is an independent student project and is not affiliated with a university.</footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

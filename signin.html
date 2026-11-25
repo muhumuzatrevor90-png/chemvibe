@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in — ChemVibe</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page">
+  <main class="auth-layout">
+    <section class="auth-intro">
+      <a class="brand brand-light" href="index.html"><span class="logo-mark"><span></span><i></i><b></b></span>ChemVibe</a>
+      <div><span class="eyebrow">YOUR CHEMISTRY STUDY SPACE</span><h1>Welcome back to<br><span>ChemVibe.</span></h1><p>Sign in to access your study profile and student space.</p></div>
+      <small>Independent student project</small>
+    </section>
+    <section class="auth-side">
+      <form class="auth-card" id="signin-form">
+        <h2>Sign in</h2>
+        <p class="muted">Enter your email and password.</p>
+        <label class="field-label">Email<input class="field" id="signin-email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+        <label class="field-label">Password<input class="field" id="signin-password" type="password" autocomplete="current-password" required placeholder="Enter your password"></label>
+        <button class="button primary full" id="signin-submit" type="submit">Sign in</button>
+        <p class="status" id="signin-status" role="status" aria-live="polite"></p>
+        <p class="auth-foot">New to ChemVibe? <a href="signup.html">Create account</a></p>
+        <a class="back-link" href="index.html">← Back to library</a>
+      </form>
+    </section>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
