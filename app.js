@@ -2,7 +2,6 @@ import {
   configured,
   auth,
   db,
-  storage,
   createAccount,
   signIn,
   signOutCurrentUser,
@@ -14,11 +13,6 @@ import {
   addDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const byId = (id) => document.getElementById(id);
 
@@ -63,7 +57,6 @@ async function initLibrary() {
       if (matchesType && matchesText) {
         visible++;
 
-        // Build card safely with DOM methods to prevent XSS
         const card = document.createElement("article");
         card.className = "card resource-card";
 
@@ -203,28 +196,20 @@ function initProfile() {
     event.preventDefault();
     const uploadStatus = byId("upload-status");
     const uploadSubmit = byId("upload-submit");
-    const fileInput = byId("res-file");
-    const file = fileInput.files[0];
+    const fileUrl = byId("res-url").value.trim();
 
-    if (!file || !auth.currentUser) return;
+    if (!fileUrl || !auth.currentUser) return;
 
     uploadSubmit.disabled = true;
-    uploadStatus.textContent = "Uploading document… please wait.";
+    uploadStatus.textContent = "Adding document to library…";
 
     try {
-      // 1. Upload file to Firebase Storage
-      const safeFileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-      const storageRef = ref(storage, `resources/${safeFileName}`);
-      await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(storageRef);
-
-      // 2. Save document details to Firestore
       await addDoc(collection(db, "resources"), {
         title: byId("res-title").value.trim(),
         type: byId("res-type").value,
         price: byId("res-price").value.trim(),
         description: byId("res-desc").value.trim(),
-        fileUrl: downloadURL,
+        fileUrl: fileUrl,
         uploadedBy: auth.currentUser.uid,
         createdAt: serverTimestamp()
       });
@@ -233,7 +218,7 @@ function initProfile() {
       uploadForm.reset();
     } catch (error) {
       console.error("Upload error:", error);
-      uploadStatus.textContent = "Upload failed. Ensure Firebase Storage is enabled and rules allow uploads.";
+      uploadStatus.textContent = "Failed to add document. Check your Firestore rules and connection.";
     } finally {
       uploadSubmit.disabled = false;
     }
