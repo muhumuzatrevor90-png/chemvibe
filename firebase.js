@@ -10,13 +10,13 @@ import {
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  // Replace these placeholders with your actual Firebase project config values
-  apiKey: "PASTE_API_KEY",
-  authDomain: "PASTE_PROJECT_ID.firebaseapp.com",
-  projectId: "PASTE_PROJECT_ID",
-  storageBucket: "PASTE_STORAGE_BUCKET",
-  messagingSenderId: "PASTE_MESSAGING_SENDER_ID",
-  appId: "PASTE_APP_ID"
+  apiKey: "AIzaSyDoBJMiGxHT0XbO6xTsbp41yLzYdYSwM8o",
+  authDomain: "chemvibe.firebaseapp.com",
+  projectId: "chemvibe",
+  storageBucket: "chemvibe.firebasestorage.app",
+  messagingSenderId: "842828658625",
+  appId: "1:842828658625:web:797d90fb084d1276f1a140",
+  measurementId: "G-HBTZTN90DW"
 };
 
 export const configured =
