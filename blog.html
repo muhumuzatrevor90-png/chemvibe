@@ -5,18 +5,34 @@
   <title>Chemistry Blog — ChemVibe</title><link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header"><a class="brand" href="index.html"><span class="logo-mark"><span></span><i></i><b></b></span>ChemVibe</a><button class="menu-toggle" id="menu-toggle">☰</button><nav class="nav" id="main-nav"><a href="index.html">Library</a><a class="active" href="blog.html">Blog</a><a href="classes.html">Live classes</a><a href="notifications.html">Notifications</a><a href="profile.html">Profile</a><a class="nav-button" href="signin.html">Sign in</a></nav></header>
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="logo-mark"><span></span><i></i><b></b></span>ChemVibe</a>
+    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <nav class="nav" id="main-nav">
+      <a href="index.html">Library</a>
+      <a class="active" href="blog.html">Blog</a>
+      <a href="classes.html">Live classes</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="profile.html">Profile</a>
+      <a href="admin.html" id="nav-admin" hidden>Admin</a>
+      <a class="nav-button" href="signin.html">Sign in</a>
+    </nav>
+  </header>
   <main class="container">
-    <section class="page-hero"><span class="eyebrow">CHEMVIBE BLOG</span><h1>Chemistry concepts,<br><span>made clearer.</span></h1><p>Starter explainers for common chemistry topics. Adapt these to your course and add your own articles.</p></section>
-    <section class="panel search-panel"><label class="search-box"><span>⌕</span><input id="blog-search" type="search" placeholder="Search concepts"></label></section>
-    <section class="section"><div class="card-grid" id="blog-list">
-      <article class="card blog-card" data-search="atomic structure protons neutrons electrons"><span class="tag">FOUNDATIONS</span><h2>Atomic structure</h2><p>Atoms contain a nucleus of protons and neutrons, with electrons occupying regions around it. Proton number identifies the element; neutron number can vary between isotopes.</p></article>
-      <article class="card blog-card" data-search="periodic trends atomic radius ionization energy"><span class="tag">INORGANIC</span><h2>Periodic trends</h2><p>Across a period, effective nuclear charge generally increases. Down a group, additional occupied shells affect atomic size and shielding. Use these ideas to explain trends rather than memorizing arrows alone.</p></article>
-      <article class="card blog-card" data-search="mole stoichiometry balanced equations calculations"><span class="tag">PHYSICAL</span><h2>The mole and stoichiometry</h2><p>Balance the equation, convert known quantities to moles, use the coefficients as mole ratios, then convert to the requested units. Check your units and identify limiting reactants when needed.</p></article>
-      <article class="card blog-card" data-search="organic chemistry functional groups alcohol carbonyl"><span class="tag">ORGANIC</span><h2>Functional groups</h2><p>Functional groups are recurring atom arrangements that influence a molecule’s properties and reactions. Learn to recognize groups such as hydroxyl, carbonyl, and carboxyl.</p></article>
-      <article class="card blog-card" data-search="chemical bonding ionic covalent electrons"><span class="tag">BONDING</span><h2>Ionic and covalent bonding</h2><p>Ionic models describe attraction between charged ions; covalent models describe shared electron pairs. Many bonds have mixed character, so treat these as useful models.</p></article>
-      <article class="card blog-card" data-search="redox oxidation reduction electron transfer"><span class="tag">INORGANIC</span><h2>Redox basics</h2><p>Oxidation is electron loss and reduction is electron gain. Oxidation-state changes provide a bookkeeping method for identifying what is oxidized and reduced.</p></article>
-    </div><div class="empty-state" id="blog-empty" hidden>No matching articles.</div></section>
-  </main><footer class="footer">Educational summaries are a starting point; follow your course materials for full detail.</footer><script type="module" src="app.js"></script>
+    <section class="page-hero">
+      <span class="eyebrow">CHEMVIBE BLOG</span>
+      <h1>Chemistry concepts,<br><span>made clearer.</span></h1>
+      <p>Starter explainers for common chemistry topics. Articles published by the administrator will appear here.</p>
+    </section>
+    <section class="panel search-panel">
+      <label class="search-box"><span>⌕</span><input id="blog-search" type="search" placeholder="Search concepts"></label>
+    </section>
+    <section class="section">
+      <div class="card-grid" id="blog-list"></div>
+      <div class="empty-state" id="blog-empty">No articles published yet.</div>
+    </section>
+  </main>
+  <footer class="footer">Educational summaries are a starting point; follow your course materials for full detail.</footer>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
