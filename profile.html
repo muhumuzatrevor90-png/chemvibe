@@ -6,6 +6,55 @@
 </head>
 <body>
   <header class="site-header"><a class="brand" href="index.html"><span class="logo-mark"><span></span><i></i><b></b></span>ChemVibe</a><button class="menu-toggle" id="menu-toggle">☰</button><nav class="nav" id="main-nav"><a href="index.html">Library</a><a href="blog.html">Blog</a><a href="classes.html">Live classes</a><a href="notifications.html">Notifications</a><a class="active" href="profile.html">Profile</a><a class="nav-button" href="signin.html">Sign in</a></nav></header>
-  <main class="container"><section class="page-hero compact"><span class="eyebrow">YOUR ACCOUNT</span><h1>Profile settings</h1><p>Sign in to manage your account. Profile editing will be enabled after Firebase setup.</p></section><section class="panel form-panel"><h2>Account</h2><p id="profile-status" class="muted">Not signed in.</p><p id="profile-email" class="muted"></p><div class="button-row"><a class="button primary" href="signin.html">Sign in</a><a class="button secondary" href="signup.html">Create account</a><button class="button danger" id="signout-button" type="button">Sign out</button></div></section></main><footer class="footer">Keep your account credentials private.</footer><script type="module" src="app.js"></script>
+  <main class="container">
+    <section class="page-hero compact">
+      <span class="eyebrow">YOUR ACCOUNT</span>
+      <h1>Profile &amp; Uploads</h1>
+      <p>Manage your account and upload study documents to the library.</p>
+    </section>
+
+    <section class="panel form-panel">
+      <h2>Account</h2>
+      <p id="profile-status" class="muted">Not signed in.</p>
+      <p id="profile-email" class="muted"></p>
+      <div class="button-row" style="margin-top: 15px;">
+        <a class="button primary" href="signin.html">Sign in</a>
+        <a class="button secondary" href="signup.html">Create account</a>
+        <button class="button danger" id="signout-button" type="button">Sign out</button>
+      </div>
+    </section>
+
+    <!-- Upload Document Panel (Visible when signed in) -->
+    <section class="panel form-panel" id="upload-section" hidden>
+      <h2>Upload a Study Document</h2>
+      <p class="muted">Add a new PDF, notes, or past paper directly to the Chemistry Library.</p>
+      <form id="upload-form" style="margin-top: 16px;">
+        <label class="field-label" style="color: var(--ink);">Resource Title
+          <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-title" type="text" required placeholder="e.g., Chemical Bonding Notes">
+        </label>
+        <label class="field-label" style="color: var(--ink);">Category
+          <select class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-type">
+            <option value="Notes">Notes</option>
+            <option value="Practice">Practice</option>
+            <option value="Past paper">Past paper</option>
+            <option value="Guide">Study guide</option>
+          </select>
+        </label>
+        <label class="field-label" style="color: var(--ink);">Price (or Free)
+          <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-price" type="text" required placeholder="e.g., Free or UGX 5,000">
+        </label>
+        <label class="field-label" style="color: var(--ink);">Short Description
+          <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-desc" type="text" required placeholder="Brief summary of what is inside">
+        </label>
+        <label class="field-label" style="color: var(--ink);">Select File (PDF, DOCX, etc.)
+          <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line); padding-top: 9px;" id="res-file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" required>
+        </label>
+        <button class="button primary" id="upload-submit" type="submit">Upload to Library</button>
+        <p class="status" id="upload-status" style="color: #087e9f; margin-top: 10px;"></p>
+      </form>
+    </section>
+  </main>
+  <footer class="footer">Keep your account credentials private.</footer>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
