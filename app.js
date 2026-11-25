@@ -11,14 +11,34 @@ import {
   collection,
   getDocs,
   addDoc,
+  deleteDoc,
+  doc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// Set your Admin email here
+const ADMIN_EMAILS = ["muhumuzatrevormbabazi@gmail.com"];
+
 const byId = (id) => document.getElementById(id);
+
+function isAdminUser(user) {
+  return Boolean(user && user.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
+}
 
 function initMenu() {
   byId("menu-toggle")?.addEventListener("click", () => {
     byId("main-nav")?.classList.toggle("open");
+  });
+}
+
+// Show Admin nav link if the logged-in user is an Admin
+function initGlobalAuthUI() {
+  if (!configured) return;
+  observeAuth((user) => {
+    const adminNav = byId("nav-admin");
+    if (adminNav) {
+      adminNav.hidden = !isAdminUser(user);
+    }
   });
 }
 
@@ -34,7 +54,7 @@ async function initLibrary() {
   if (configured && db) {
     try {
       const snapshot = await getDocs(collection(db, "resources"));
-      resources = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      resources = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
     } catch (error) {
       console.error("Failed to load resources:", error);
     }
@@ -139,8 +159,8 @@ function initAuthForms() {
     submit.disabled = true;
     status.textContent = "Signing in…";
     try {
-      await signIn(byId("signin-email").value.trim(), byId("signin-password").value);
-      location.href = "profile.html";
+      const cred = await signIn(byId("signin-email").value.trim(), byId("signin-password").value);
+      location.href = isAdminUser(cred.user) ? "admin.html" : "profile.html";
     } catch (error) {
       console.error(error);
       status.textContent = error.code === "auth/invalid-credential" ? "Email or password is incorrect." : "Sign-in failed. Check Firebase Authentication setup.";
@@ -158,8 +178,8 @@ function initAuthForms() {
     submit.disabled = true;
     status.textContent = "Creating account…";
     try {
-      await createAccount(byId("signup-email").value.trim(), password, byId("signup-name").value.trim());
-      location.href = "profile.html";
+      const cred = await createAccount(byId("signup-email").value.trim(), password, byId("signup-name").value.trim());
+      location.href = isAdminUser(cred.user) ? "admin.html" : "profile.html";
     } catch (error) {
       console.error(error);
       status.textContent = error.code === "auth/email-already-in-use" ? "That email already has an account." : "Sign-up failed. Check Firebase Authentication setup.";
@@ -171,7 +191,10 @@ function initProfile() {
   if (!byId("profile-status")) return;
   const status = byId("profile-status");
   const email = byId("profile-email");
-  const uploadSection = byId("upload-section");
+  const signInBtn = byId("profile-signin-btn");
+  const signUpBtn = byId("profile-signup-btn");
+  const adminBtn = byId("profile-admin-btn");
+  const signOutBtn = byId("signout-button");
 
   if (!configured) {
     status.textContent = "Firebase is not connected yet.";
@@ -181,14 +204,97 @@ function initProfile() {
   observeAuth((user) => {
     status.textContent = user ? `Signed in as ${user.displayName || "ChemVibe student"}.` : "Not signed in.";
     email.textContent = user?.email || "";
-    if (uploadSection) {
-      uploadSection.hidden = !user;
-    }
+    if (signInBtn) signInBtn.hidden = Boolean(user);
+    if (signUpBtn) signUpBtn.hidden = Boolean(user);
+    if (signOutBtn) signOutBtn.hidden = !user;
+    if (adminBtn) adminBtn.hidden = !isAdminUser(user);
   });
 
-  byId("signout-button")?.addEventListener("click", async () => {
+  signOutBtn?.addEventListener("click", async () => {
     await signOutCurrentUser();
     location.href = "index.html";
+  });
+}
+
+function initAdminWorkspace() {
+  const deniedBox = byId("admin-denied");
+  const workspaceBox = byId("admin-workspace");
+  const manageBox = byId("admin-manage");
+  if (!deniedBox || !workspaceBox) return;
+
+  const deniedMsg = byId("admin-denied-msg");
+
+  if (!configured) {
+    deniedMsg.textContent = "Firebase is not configured yet.";
+    return;
+  }
+
+  async function loadAdminResources() {
+    const list = byId("admin-resource-list");
+    if (!list) return;
+    list.innerHTML = "<p class='muted'>Loading documents…</p>";
+    try {
+      const snapshot = await getDocs(collection(db, "resources"));
+      list.innerHTML = "";
+      if (snapshot.empty) {
+        list.innerHTML = "<p class='muted'>No documents uploaded yet.</p>";
+        return;
+      }
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const row = document.createElement("div");
+        row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--line); border-radius:10px; gap:12px;";
+        
+        const info = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = data.title || "Untitled";
+        const meta = document.createElement("div");
+        meta.className = "muted";
+        meta.textContent = `${data.type || "Notes"} • ${data.price || "Free"}`;
+        info.append(title, meta);
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "button danger";
+        delBtn.type = "button";
+        delBtn.textContent = "Delete";
+        delBtn.addEventListener("click", async () => {
+          if (!confirm(`Delete "${data.title}"?`)) return;
+          delBtn.disabled = true;
+          try {
+            await deleteDoc(doc(db, "resources", docSnap.id));
+            loadAdminResources();
+          } catch (err) {
+            console.error(err);
+            alert("Failed to delete document. Check Firestore rules.");
+            delBtn.disabled = false;
+          }
+        });
+
+        row.append(info, delBtn);
+        list.appendChild(row);
+      });
+    } catch (error) {
+      console.error(error);
+      list.innerHTML = "<p class='muted'>Could not load documents.</p>";
+    }
+  }
+
+  observeAuth((user) => {
+    if (isAdminUser(user)) {
+      deniedBox.hidden = true;
+      workspaceBox.hidden = false;
+      if (manageBox) {
+        manageBox.hidden = false;
+        loadAdminResources();
+      }
+    } else {
+      deniedBox.hidden = false;
+      workspaceBox.hidden = true;
+      if (manageBox) manageBox.hidden = true;
+      deniedMsg.textContent = user
+        ? `Access denied. Your account (${user.email}) does not have admin privileges.`
+        : "Please sign in with your admin email to access this workspace.";
+    }
   });
 
   const uploadForm = byId("upload-form");
@@ -198,10 +304,10 @@ function initProfile() {
     const uploadSubmit = byId("upload-submit");
     const fileUrl = byId("res-url").value.trim();
 
-    if (!fileUrl || !auth.currentUser) return;
+    if (!fileUrl || !isAdminUser(auth.currentUser)) return;
 
     uploadSubmit.disabled = true;
-    uploadStatus.textContent = "Adding document to library…";
+    uploadStatus.textContent = "Publishing document to library…";
 
     try {
       await addDoc(collection(db, "resources"), {
@@ -214,11 +320,12 @@ function initProfile() {
         createdAt: serverTimestamp()
       });
 
-      uploadStatus.textContent = "Success! Document added to the library.";
+      uploadStatus.textContent = "Success! Document is now live in the library.";
       uploadForm.reset();
+      loadAdminResources();
     } catch (error) {
       console.error("Upload error:", error);
-      uploadStatus.textContent = "Failed to add document. Check your Firestore rules and connection.";
+      uploadStatus.textContent = "Failed to add document. Ensure your Firestore rules allow admin writes.";
     } finally {
       uploadSubmit.disabled = false;
     }
@@ -226,7 +333,9 @@ function initProfile() {
 }
 
 initMenu();
+initGlobalAuthUI();
 initLibrary();
 initBlog();
 initAuthForms();
 initProfile();
+initAdminWorkspace();
