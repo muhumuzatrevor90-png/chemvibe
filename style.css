@@ -49,7 +49,7 @@ button {
   cursor: pointer;
 }
 
-/* === Sticky Header with Guaranteed Clickability === */
+/* === Sticky Header (Locks to top and stays visible while scrolling) === */
 .site-header {
   position: sticky;
   top: 0;
