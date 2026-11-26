@@ -1,21 +1,50 @@
-<!-- Add this section inside <main class="container"> in profile.html -->
-<section class="panel form-panel" style="margin-top: 24px;">
-  <h2>Change Password</h2>
-  <p class="muted">Update your account password securely.</p>
-  <form id="password-change-form">
-    <label class="field-label">Current Password
-      <div style="position: relative;">
-        <input class="field" id="current-password" type="password" required placeholder="Enter current password" style="padding-right: 40px;">
-        <button type="button" class="password-toggle" data-target="current-password" aria-label="Toggle password visibility" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1rem;">👁️</button>
+<main class="container">
+  <section class="page-hero compact">
+    <span class="eyebrow">YOUR ACCOUNT</span>
+    <h1>Student Profile</h1>
+    <p>Manage your ChemVibe account settings.</p>
+  </section>
+
+  <!-- Main Account Details Box -->
+  <section class="panel form-panel">
+    <h2>Account Details</h2>
+    <p class="muted" id="profile-summary">Not signed in.</p>
+    <div class="button-row" style="margin-top: 18px;">
+      <a class="button primary" href="signin.html">Sign in</a>
+      <a class="button secondary" href="signup.html">Create account</a>
+      <button class="button secondary" id="open-password-btn" type="button">🔒 Change Password</button>
+      <a class="button primary" id="profile-admin-link" href="admin.html" hidden>Open Admin Workspace</a>
+      <button class="button danger" id="signout-button" type="button">Sign out</button>
+    </div>
+  </section>
+
+  <!-- Hidden Password Box (Opens when clicking "Change Password" above) -->
+  <section class="panel form-panel" id="password-change-panel" hidden>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h2 style="margin: 0;">Change Password</h2>
+      <button type="button" class="button secondary" id="close-password-btn" style="min-height: 34px; padding: 4px 12px;">✕ Close</button>
+    </div>
+    <p class="muted" style="margin-bottom: 18px;">Update your account password securely.</p>
+    
+    <form id="password-change-form">
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-weight: 700; font-size: 0.9rem; color: var(--navy); margin-bottom: 6px;">Current Password</label>
+        <div style="position: relative; width: 100%;">
+          <input class="field" id="current-password" type="password" required placeholder="Enter current password" style="width: 100%; padding-right: 44px;">
+          <button type="button" class="password-toggle" data-target="current-password" aria-label="Show password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.1rem; color: var(--muted);">👁️</button>
+        </div>
       </div>
-    </label>
-    <label class="field-label">New Password
-      <div style="position: relative;">
-        <input class="field" id="new-password" type="password" required placeholder="Enter new password (min. 6 characters)" style="padding-right: 40px;">
-        <button type="button" class="password-toggle" data-target="new-password" aria-label="Toggle password visibility" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1rem;">👁️</button>
+
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-weight: 700; font-size: 0.9rem; color: var(--navy); margin-bottom: 6px;">New Password</label>
+        <div style="position: relative; width: 100%;">
+          <input class="field" id="new-password" type="password" required placeholder="Enter new password (min. 6 characters)" style="width: 100%; padding-right: 44px;">
+          <button type="button" class="password-toggle" data-target="new-password" aria-label="Show password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.1rem; color: var(--muted);">👁️</button>
+        </div>
       </div>
-    </label>
-    <button class="button primary" id="password-submit" type="submit">Update Password</button>
-    <p class="status" id="password-status" role="status" aria-live="polite" style="margin-top: 10px;"></p>
-  </form>
-</section>
+
+      <button class="button primary" id="password-submit" type="submit">Update Password</button>
+      <p class="status" id="password-status" role="status" aria-live="polite" style="color: var(--cyan-hover); font-weight: 600;"></p>
+    </form>
+  </section>
+</main>
