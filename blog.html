@@ -6,7 +6,7 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="index.html"><span class="logo-mark"><span></span><i></i><b></b></span>ChemVibe</a>
+    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>ChemVibe</a>
     <button class="menu-toggle" id="menu-toggle">☰</button>
     <nav class="nav" id="main-nav">
       <a href="index.html">Library</a>
@@ -19,15 +19,46 @@
       <a class="nav-button" href="signin.html">Sign in</a>
     </nav>
   </header>
+
+  <div class="chem-marquee" aria-hidden="true">
+    <div class="chem-marquee-track">
+      <span class="chem-pill"><b>ORGANIC</b> Functional Groups &amp; Stereochemistry</span>
+      <span class="chem-pill"><b>INORGANIC</b> Transition Metals &amp; Crystal Field Theory</span>
+      <span class="chem-pill"><b>PHYSICAL</b> Quantum Mechanics &amp; Spectroscopy</span>
+      <span class="chem-pill"><b>ANALYTICAL</b> Chromatography &amp; Titration</span>
+      <span class="chem-pill"><b>ORGANIC</b> Functional Groups &amp; Stereochemistry</span>
+      <span class="chem-pill"><b>INORGANIC</b> Transition Metals &amp; Crystal Field Theory</span>
+      <span class="chem-pill"><b>PHYSICAL</b> Quantum Mechanics &amp; Spectroscopy</span>
+      <span class="chem-pill"><b>ANALYTICAL</b> Chromatography &amp; Titration</span>
+    </div>
+  </div>
+
   <main class="container">
     <section class="page-hero">
-      <span class="eyebrow">CHEMVIBE BLOG</span>
-      <h1>Chemistry concepts,<br><span>made clearer.</span></h1>
-      <p>Starter explainers for common chemistry topics. Articles published by the administrator will appear here.</p>
+      <div class="hero-visual-wrap">
+        <div style="flex: 1; min-width: 260px;">
+          <span class="eyebrow">CHEMVIBE BLOG</span>
+          <h1>Chemistry concepts,<br><span>made clearer.</span></h1>
+          <p>Starter explainers for common chemistry topics. Articles published by Dr. Ruth Mbabazi and the ChemVibe team appear here.</p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <!-- Erlenmeyer Flask & Reaction Bubbles SVG -->
+          <svg width="130" height="130" viewBox="0 0 100 100" fill="none" stroke="#38bdf8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M38 15h24"/>
+            <path d="M42 15v22L20 78a6 6 0 0 0 5 9h50a6 6 0 0 0 5-9L58 37V15"/>
+            <path d="M27 66h46" stroke="#0ea5e9" stroke-dasharray="4 3"/>
+            <circle cx="46" cy="54" r="3" fill="#38bdf8"/>
+            <circle cx="55" cy="44" r="2.5" fill="#0ea5e9"/>
+            <circle cx="50" cy="76" r="3.5" fill="#38bdf8"/>
+          </svg>
+        </div>
+      </div>
     </section>
+
     <section class="panel search-panel">
       <label class="search-box"><span>⌕</span><input id="blog-search" type="search" placeholder="Search concepts"></label>
     </section>
+
     <section class="section">
       <div class="card-grid" id="blog-list"></div>
       <div class="empty-state" id="blog-empty">No articles published yet.</div>
