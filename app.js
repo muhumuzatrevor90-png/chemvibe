@@ -232,4 +232,41 @@ function renderClasses() {
   });
 }
 
+// Notifications Rendering for students
+async function loadNotificationsFromFirestore() {
+  const container = byId("notifications-list");
+  const emptyState = byId("notifications-empty");
+  if (!container) return;
+
+  try {
+    const snap = await getDocs(collection(db, "notifications"));
+    let notifications = [];
+    snap.forEach((doc) => {
+      notifications.push({ id: doc.id, ...doc.data() });
+    });
+
+    container.innerHTML = "";
+    if (notifications.length === 0) {
+      if (emptyState) emptyState.hidden = false;
+      return;
+    }
+    if (emptyState) emptyState.hidden = true;
+
+    notifications.forEach((notif) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.marginBottom = "16px";
+      card.innerHTML = `
+        <span class="tag">${notif.date || "Announcement"}</span>
+        <h3>${notif.title}</h3>
+        <p style="margin-top: 8px;">${notif.message}</p>
+      `;
+      container.appendChild(card);
+    });
+  } catch (error) {
+    console.error("Error loading notifications:", error);
+  }
+}
+
 loadDataFromFirestore();
+loadNotificationsFromFirestore();
