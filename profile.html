@@ -1,13 +1,15 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Profile — ChemVibe</title><link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Profile — ChemVibe</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="index.html"><span class="logo-mark"><span></span><i></i><b></b></span>ChemVibe</a>
-    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>ChemVibe</a>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
     <nav class="nav" id="main-nav">
       <a href="index.html">Library</a>
       <a href="blog.html">Blog</a>
@@ -19,8 +21,9 @@
       <a class="nav-button" href="signin.html">Sign in</a>
     </nav>
   </header>
+
   <main class="container">
-    <section class="page-hero compact">
+    <section class="page-hero">
       <span class="eyebrow">YOUR ACCOUNT</span>
       <h1>Student Profile</h1>
       <p>Manage your ChemVibe account settings.</p>
@@ -28,17 +31,19 @@
 
     <section class="panel form-panel">
       <h2>Account Details</h2>
-      <p id="profile-status" class="muted">Not signed in.</p>
-      <p id="profile-email" class="muted"></p>
-      <div class="button-row" style="margin-top: 15px;">
-        <a class="button primary" href="signin.html" id="profile-signin-btn">Sign in</a>
-        <a class="button secondary" href="signup.html" id="profile-signup-btn">Create account</a>
-        <a class="button primary" href="admin.html" id="profile-admin-btn" hidden>Open Admin Workspace</a>
+      <p class="muted" id="profile-summary">Not signed in.</p>
+      <div class="button-row" style="margin-top: 18px;">
+        <a class="button primary" href="signin.html">Sign in</a>
+        <a class="button secondary" href="signup.html">Create account</a>
+        <a class="button primary" id="profile-admin-link" href="admin.html" hidden>Open Admin Workspace</a>
         <button class="button danger" id="signout-button" type="button" hidden>Sign out</button>
       </div>
     </section>
+
+    <p class="notice">Keep your account credentials private.</p>
   </main>
-  <footer class="footer">Keep your account credentials private.</footer>
+
+  <footer class="footer">ChemVibe is an independent student project created by Trevor Mbabazi with educational content provided by Dr. Ruth Mbabazi.</footer>
   <script type="module" src="app.js"></script>
 </body>
 </html>
