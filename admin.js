@@ -25,7 +25,7 @@ if (configured && auth) {
     if (user && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
       if (authPanel) authPanel.hidden = true;
       if (workspaceContent) workspaceContent.hidden = false;
-      loadAdminContent(); // Load posts for deletion management
+      loadAdminContent();
     } else {
       if (statusTitle) statusTitle.textContent = "Access Denied";
       if (statusDesc) statusDesc.textContent = "This account does not have administrator privileges.";
@@ -34,7 +34,7 @@ if (configured && auth) {
   });
 }
 
-// --- Load Content for Management/Deletion ---
+// --- Load Content for Management & Deletion ---
 async function loadAdminContent() {
   if (!db) return;
 
@@ -50,7 +50,7 @@ async function loadAdminContent() {
       div.style.marginBottom = "10px";
       div.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div><strong>${data.title}</strong> <span class="muted">(${data.category})</span></div>
+          <div><strong>${data.title}</strong> <span class="muted">(${data.category} — ${data.price || "Free"})</span></div>
           <button class="button secondary delete-btn" data-coll="resources" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
         </div>
       `;
@@ -98,6 +98,26 @@ async function loadAdminContent() {
     });
   }
 
+  // 4. Notifications
+  const notifContainer = byId("admin-notif-list");
+  if (notifContainer) {
+    const notifSnap = await getDocs(collection(db, "notifications"));
+    notifContainer.innerHTML = notifSnap.empty ? "<p class='muted'>No notifications found.</p>" : "";
+    notifSnap.forEach((document) => {
+      const data = document.data();
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.marginBottom = "10px";
+      div.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div><strong>${data.title}</strong> <span class="muted">(${data.date})</span></div>
+          <button class="button secondary delete-btn" data-coll="notifications" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+        </div>
+      `;
+      notifContainer.appendChild(div);
+    });
+  }
+
   // Attach delete handlers
   document.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
@@ -108,7 +128,7 @@ async function loadAdminContent() {
         try {
           await deleteDoc(doc(db, collectionName, docId));
           alert("Post deleted successfully!");
-          loadAdminContent(); // Refresh the list
+          loadAdminContent();
         } catch (err) {
           console.error("Error deleting document:", err);
           alert("Failed to delete post.");
@@ -118,13 +138,14 @@ async function loadAdminContent() {
   });
 }
 
-// --- 1. Publish Study Resource to Firestore ---
+// --- Publish Resource ---
 const adminForm = byId("admin-add-form");
 if (adminForm) {
   adminForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const title = byId("admin-title").value;
     const category = byId("admin-category").value;
+    const price = byId("admin-price").value.trim() || "Free";
     const link = byId("admin-link").value;
     const description = byId("admin-desc").value;
 
@@ -132,9 +153,10 @@ if (adminForm) {
 
     try {
       await addDoc(collection(db, "resources"), {
-        title, category, price: "Free", description, link, createdAt: Date.now()
+        title, category, price, description, link, createdAt: Date.now()
       });
       adminForm.reset();
+      byId("admin-price").value = "Free";
       alert("Study resource published successfully!");
       loadAdminContent();
     } catch (error) {
@@ -143,7 +165,7 @@ if (adminForm) {
   });
 }
 
-// --- 2. Publish Blog Post to Firestore ---
+// --- Publish Blog ---
 const blogForm = byId("admin-blog-form");
 if (blogForm) {
   blogForm.addEventListener("submit", async (e) => {
@@ -168,7 +190,7 @@ if (blogForm) {
   });
 }
 
-// --- 3. Schedule Live Class to Firestore ---
+// --- Schedule Class ---
 const classForm = byId("admin-class-form");
 if (classForm) {
   classForm.addEventListener("submit", async (e) => {
@@ -189,6 +211,30 @@ if (classForm) {
       loadAdminContent();
     } catch (error) {
       console.error("Error scheduling class:", error);
+    }
+  });
+}
+
+// --- Broadcast Notification ---
+const notifForm = byId("admin-notif-form");
+if (notifForm) {
+  notifForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const title = byId("notif-title").value;
+    const date = byId("notif-date").value;
+    const message = byId("notif-message").value;
+
+    if (!title || !message) return;
+
+    try {
+      await addDoc(collection(db, "notifications"), {
+        title, date, message, createdAt: Date.now()
+      });
+      notifForm.reset();
+      alert("Notification broadcasted successfully!");
+      loadAdminContent();
+    } catch (error) {
+      console.error("Error sending notification:", error);
     }
   });
 }
