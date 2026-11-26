@@ -6,7 +6,8 @@ import {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  updatePassword 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -33,7 +34,6 @@ try {
   auth = getAuth(app);
   db = getFirestore(app);
   
-  // Analytics can run only in browser environments
   if (typeof window !== "undefined") {
     analytics = getAnalytics(app);
   }
@@ -52,5 +52,6 @@ export {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  updatePassword 
 };
