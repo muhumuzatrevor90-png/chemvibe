@@ -23,16 +23,15 @@ body {
   line-height: 1.5;
 }
 
-/* === Sticky Header === */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 1000;
+  background: var(--card-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px 32px;
-  background: var(--card-bg);
   border-bottom: 1px solid var(--line);
   box-shadow: 0 4px 12px rgba(11, 25, 44, 0.06);
 }
@@ -435,101 +434,4 @@ p {
   .nav.open {
     display: flex;
   }
-}
-
-/* === Chemistry Marquee Ticker & Visual Enhancements === */
-.chem-marquee {
-  width: 100%;
-  overflow: hidden;
-  background: linear-gradient(90deg, #0b192c 0%, #102a43 50%, #0b192c 100%);
-  color: #e0f7fa;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(56, 189, 248, 0.25);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  display: flex;
-  user-select: none;
-}
-
-.chem-marquee-track {
-  display: flex;
-  gap: 36px;
-  white-space: nowrap;
-  animation: chem-scroll 28s linear infinite;
-}
-
-.chem-marquee:hover .chem-marquee-track {
-  animation-play-state: paused;
-}
-
-.chem-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.chem-pill b {
-  color: #38bdf8;
-  font-family: monospace;
-  font-size: 0.95rem;
-}
-
-@keyframes chem-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.hero-visual-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.hero-art {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(56, 189, 248, 0.08);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  border-radius: 20px;
-  padding: 18px;
-}
-
-.chem-banner-strip {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin: 24px 0;
-}
-
-.chem-visual-card {
-  background: linear-gradient(135deg, #0f2942 0%, #163b5c 100%);
-  color: #ffffff;
-  border-radius: 16px;
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  box-shadow: 0 8px 20px rgba(11, 25, 44, 0.08);
-}
-
-.chem-visual-card svg {
-  flex-shrink: 0;
-  color: #38bdf8;
-}
-
-.chem-visual-card h4 {
-  margin: 0 0 4px 0;
-  font-size: 1rem;
-  color: #ffffff;
-}
-
-.chem-visual-card p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #cbd5e1;
 }
