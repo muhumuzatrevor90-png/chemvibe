@@ -1,7 +1,13 @@
 import { 
-  auth, configured, 
+  auth, db, configured, 
   signOut, onAuthStateChanged, updatePassword 
 } from "./firebase.js";
+import { 
+  collection, 
+  getDocs, 
+  query, 
+  orderBy 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const byId = (id) => document.getElementById(id);
 
@@ -13,11 +19,6 @@ if (menuToggle && mainNav) {
     mainNav.classList.toggle("open");
   });
 }
-
-// --- Dynamic Data Store (Loaded directly from Admin / LocalStorage) ---
-let resources = JSON.parse(localStorage.getItem("chemvibe_resources")) || [];
-let blogPosts = JSON.parse(localStorage.getItem("chemvibe_blogs")) || [];
-let liveClasses = JSON.parse(localStorage.getItem("chemvibe_classes")) || [];
 
 // --- Authentication State Management ---
 if (configured && auth) {
@@ -90,6 +91,45 @@ if (passwordForm) {
   });
 }
 
+// --- Global Data Arrays ---
+let resources = [];
+let blogPosts = [];
+let liveClasses = [];
+
+// --- Fetch Data from Firestore ---
+async function loadDataFromFirestore() {
+  if (!configured || !db) return;
+
+  try {
+    // 1. Fetch Resources
+    const resSnapshot = await getDocs(collection(db, "resources"));
+    resources = [];
+    resSnapshot.forEach((doc) => {
+      resources.push({ id: doc.id, ...doc.data() });
+    });
+    renderResources(resources);
+
+    // 2. Fetch Blog Posts
+    const blogSnapshot = await getDocs(collection(db, "blogs"));
+    blogPosts = [];
+    blogSnapshot.forEach((doc) => {
+      blogPosts.push({ id: doc.id, ...doc.data() });
+    });
+    renderBlog();
+
+    // 3. Fetch Live Classes
+    const classSnapshot = await getDocs(collection(db, "classes"));
+    liveClasses = [];
+    classSnapshot.forEach((doc) => {
+      liveClasses.push({ id: doc.id, ...doc.data() });
+    });
+    renderClasses();
+
+  } catch (error) {
+    console.error("Error fetching data from Firestore:", error);
+  }
+}
+
 // --- Library Rendering & Filtering ---
 function renderResources(list) {
   const container = byId("resource-list");
@@ -111,7 +151,7 @@ function renderResources(list) {
     card.className = "card resource-card";
     card.innerHTML = `
       <div class="card-meta">
-        <span class="tag">${res.category}</span>
+        <span class="tag">${res.category || "Notes"}</span>
         <span class="price">${res.price || "Free"}</span>
       </div>
       <h3>${res.title}</h3>
@@ -126,13 +166,14 @@ const searchInput = byId("resource-search");
 const filterChips = document.querySelectorAll("#resource-filters .chip");
 
 function filterAndRenderResources() {
-  const query = searchInput ? searchInput.value.toLowerCase() : "";
+  const queryText = searchInput ? searchInput.value.toLowerCase() : "";
   const activeChip = document.querySelector("#resource-filters .chip.active");
   const selectedType = activeChip ? activeChip.dataset.type : "all";
 
   const filtered = resources.filter((res) => {
-    const matchesQuery = res.title.toLowerCase().includes(query) || res.description.toLowerCase().includes(query);
-    const matchesType = selectedType === "all" || res.category.toLowerCase() === selectedType.toLowerCase();
+    const matchesQuery = (res.title && res.title.toLowerCase().includes(queryText)) || 
+                         (res.description && res.description.toLowerCase().includes(queryText));
+    const matchesType = selectedType === "all" || (res.category && res.category.toLowerCase() === selectedType.toLowerCase());
     return matchesQuery && matchesType;
   });
 
@@ -151,8 +192,6 @@ filterChips.forEach((chip) => {
   });
 });
 
-renderResources(resources);
-
 // --- Blog Rendering ---
 function renderBlog() {
   const container = byId("blog-list");
@@ -170,7 +209,7 @@ function renderBlog() {
     const card = document.createElement("div");
     card.className = "card blog-card";
     card.innerHTML = `
-      <span class="muted">${post.date}</span>
+      <span class="muted">${post.date || ""}</span>
       <h2>${post.title}</h2>
       <p>${post.summary}</p>
       ${post.link && post.link !== "#" ? `<a class="text-link" href="${post.link}" target="_blank" style="display: inline-block; margin-top: 8px;">Read article / View file →</a>` : ""}
@@ -178,7 +217,6 @@ function renderBlog() {
     container.appendChild(card);
   });
 }
-renderBlog();
 
 // --- Live Classes Rendering ---
 function renderClasses() {
@@ -206,4 +244,6 @@ function renderClasses() {
     container.appendChild(card);
   });
 }
-renderClasses();
+
+// Load Firestore data on page startup
+loadDataFromFirestore();
