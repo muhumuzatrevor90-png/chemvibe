@@ -25,11 +25,9 @@ if (configured && auth) {
 
     if (user) {
       if (user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-        // Access Granted!
         if (authPanel) authPanel.hidden = true;
         if (workspaceContent) workspaceContent.hidden = false;
       } else {
-        // Logged in, but not the admin email
         if (statusTitle) statusTitle.textContent = "Access Denied";
         if (statusDesc) statusDesc.textContent = `Signed in as ${user.email}. This account does not have administrator privileges.`;
         if (signinBtn) {
@@ -38,7 +36,6 @@ if (configured && auth) {
         }
       }
     } else {
-      // Not logged in at all
       if (statusTitle) statusTitle.textContent = "Checking permissions...";
       if (statusDesc) statusDesc.textContent = "Please sign in with your admin email to access the workspace.";
       if (signinBtn) {
@@ -49,7 +46,7 @@ if (configured && auth) {
   });
 }
 
-// --- Handle Admin Resource Submission ---
+// --- 1. Publish Study Resource ---
 const adminForm = byId("admin-add-form");
 if (adminForm) {
   adminForm.addEventListener("submit", (e) => {
@@ -60,9 +57,7 @@ if (adminForm) {
 
     if (!title || !description) return;
 
-    // Retrieve existing resources or initialize
     let resources = JSON.parse(localStorage.getItem("chemvibe_resources")) || [];
-    
     resources.push({
       id: Date.now().toString(),
       title,
@@ -75,5 +70,57 @@ if (adminForm) {
     localStorage.setItem("chemvibe_resources", JSON.stringify(resources));
     adminForm.reset();
     alert("Study resource published successfully!");
+  });
+}
+
+// --- 2. Publish Blog Post ---
+const blogForm = byId("admin-blog-form");
+if (blogForm) {
+  blogForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = byId("blog-title").value;
+    const date = byId("blog-date").value;
+    const summary = byId("blog-summary").value;
+
+    if (!title || !summary) return;
+
+    let blogPosts = JSON.parse(localStorage.getItem("chemvibe_blogs")) || [];
+    blogPosts.push({
+      id: Date.now().toString(),
+      title,
+      date,
+      summary
+    });
+
+    localStorage.setItem("chemvibe_blogs", JSON.stringify(blogPosts));
+    blogForm.reset();
+    alert("Blog article published successfully!");
+  });
+}
+
+// --- 3. Schedule Live Class ---
+const classForm = byId("admin-class-form");
+if (classForm) {
+  classForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = byId("class-title").value;
+    const host = byId("class-host").value;
+    const time = byId("class-time").value;
+    const link = byId("class-link").value;
+
+    if (!title || !host) return;
+
+    let liveClasses = JSON.parse(localStorage.getItem("chemvibe_classes")) || [];
+    liveClasses.push({
+      id: Date.now().toString(),
+      title,
+      host,
+      time,
+      link
+    });
+
+    localStorage.setItem("chemvibe_classes", JSON.stringify(liveClasses));
+    classForm.reset();
+    alert("Live class scheduled successfully!");
   });
 }
