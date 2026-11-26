@@ -1,6 +1,6 @@
 import { 
-  auth, db, configured, 
-  signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged 
+  auth, configured, 
+  signInWithEmailAndPassword, signOut, onAuthStateChanged 
 } from "./firebase.js";
 
 const byId = (id) => document.getElementById(id);
