@@ -4,14 +4,11 @@ import {
 } from "./firebase.js";
 import { 
   collection, 
-  getDocs, 
-  query, 
-  orderBy 
+  getDocs 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const byId = (id) => document.getElementById(id);
 
-// --- Mobile Navigation Toggle ---
 const menuToggle = byId("menu-toggle");
 const mainNav = byId("main-nav");
 if (menuToggle && mainNav) {
@@ -20,7 +17,6 @@ if (menuToggle && mainNav) {
   });
 }
 
-// --- Authentication State Management ---
 if (configured && auth) {
   onAuthStateChanged(auth, (user) => {
     const adminLink = byId("nav-admin");
@@ -57,7 +53,6 @@ if (configured && auth) {
   }
 }
 
-// --- Password Change Handling ---
 const passwordForm = byId("password-change-form");
 if (passwordForm) {
   passwordForm.addEventListener("submit", async (e) => {
@@ -91,17 +86,14 @@ if (passwordForm) {
   });
 }
 
-// --- Global Data Arrays ---
 let resources = [];
 let blogPosts = [];
 let liveClasses = [];
 
-// --- Fetch Data from Firestore ---
 async function loadDataFromFirestore() {
   if (!configured || !db) return;
 
   try {
-    // 1. Fetch Resources
     const resSnapshot = await getDocs(collection(db, "resources"));
     resources = [];
     resSnapshot.forEach((doc) => {
@@ -109,7 +101,6 @@ async function loadDataFromFirestore() {
     });
     renderResources(resources);
 
-    // 2. Fetch Blog Posts
     const blogSnapshot = await getDocs(collection(db, "blogs"));
     blogPosts = [];
     blogSnapshot.forEach((doc) => {
@@ -117,7 +108,6 @@ async function loadDataFromFirestore() {
     });
     renderBlog();
 
-    // 3. Fetch Live Classes
     const classSnapshot = await getDocs(collection(db, "classes"));
     liveClasses = [];
     classSnapshot.forEach((doc) => {
@@ -130,7 +120,6 @@ async function loadDataFromFirestore() {
   }
 }
 
-// --- Library Rendering & Filtering ---
 function renderResources(list) {
   const container = byId("resource-list");
   const emptyState = byId("resource-empty");
@@ -192,7 +181,6 @@ filterChips.forEach((chip) => {
   });
 });
 
-// --- Blog Rendering ---
 function renderBlog() {
   const container = byId("blog-list");
   const emptyState = byId("blog-empty");
@@ -218,7 +206,6 @@ function renderBlog() {
   });
 }
 
-// --- Live Classes Rendering ---
 function renderClasses() {
   const container = byId("classes-list");
   const emptyState = byId("classes-empty");
@@ -245,5 +232,4 @@ function renderClasses() {
   });
 }
 
-// Load Firestore data on page startup
 loadDataFromFirestore();
