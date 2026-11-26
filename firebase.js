@@ -1,50 +1,49 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  updateProfile
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// TODO: Replace with your actual Firebase project configuration credentials
 const firebaseConfig = {
-  apiKey: "AIzaSyDoBJMiGxHT0XbO6xTsbp41yLzYdYSwM8o",
-  authDomain: "chemvibe.firebaseapp.com",
-  projectId: "chemvibe",
-  storageBucket: "chemvibe.firebasestorage.app",
-  messagingSenderId: "842828658625",
-  appId: "1:842828658625:web:797d90fb084d1276f1a140",
-  measurementId: "G-HBTZTN90DW"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
-export const configured =
-  !firebaseConfig.apiKey.startsWith("PASTE_") &&
-  !firebaseConfig.projectId.startsWith("PASTE_");
+let app;
+let auth;
+let db;
+let configured = false;
 
-export const app = configured ? initializeApp(firebaseConfig) : null;
-export const auth = app ? getAuth(app) : null;
-export const db = app ? getFirestore(app) : null;
-
-export async function createAccount(email, password, displayName) {
-  if (!auth) throw new Error("Firebase is not configured yet.");
-  const result = await createUserWithEmailAndPassword(auth, email, password);
-  if (displayName) await updateProfile(result.user, { displayName });
-  return result;
+try {
+  if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    configured = true;
+  } else {
+    console.warn("Firebase config is using placeholder values. Please update firebase.js with your real credentials.");
+  }
+} catch (error) {
+  console.error("Firebase initialization error:", error);
 }
 
-export function signIn(email, password) {
-  if (!auth) throw new Error("Firebase is not configured yet.");
-  return signInWithEmailAndPassword(auth, email, password);
-}
-
-export function signOutCurrentUser() {
-  if (!auth) return Promise.resolve();
-  return signOut(auth);
-}
-
-export function observeAuth(callback) {
-  if (!auth) return () => {};
-  return onAuthStateChanged(auth, callback);
-}
+export { 
+  app, 
+  auth, 
+  db, 
+  configured, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged 
+};
