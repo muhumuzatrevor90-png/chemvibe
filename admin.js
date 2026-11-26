@@ -1,115 +1,12 @@
-import { auth, configured, onAuthStateChanged } from "./firebase.js";
+import { db } from "./firebase.js";
+import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const byId = (id) => document.getElementById(id);
-const ADMIN_EMAIL = "muhumuzatrevormbabazi@gmail.com";
-
-// --- Mobile Navigation Toggle ---
-const menuToggle = byId("menu-toggle");
-const mainNav = byId("main-nav");
-if (menuToggle && mainNav) {
-  menuToggle.addEventListener("click", () => {
-    mainNav.classList.toggle("open");
-  });
-}
-
-// --- Admin Permission Check ---
-if (configured && auth) {
-  onAuthStateChanged(auth, (user) => {
-    const authPanel = byId("admin-auth-panel");
-    const workspaceContent = byId("admin-workspace-content");
-    const statusTitle = byId("admin-status-title");
-    const statusDesc = byId("admin-status-desc");
-    const signinBtn = byId("admin-signin-btn");
-
-    if (user && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-      if (authPanel) authPanel.hidden = true;
-      if (workspaceContent) workspaceContent.hidden = false;
-    } else {
-      if (statusTitle) statusTitle.textContent = "Access Denied";
-      if (statusDesc) statusDesc.textContent = "This account does not have administrator privileges.";
-      if (signinBtn) signinBtn.href = "signin.html";
-    }
-  });
-}
-
-// --- 1. Publish Study Resource ---
-const adminForm = byId("admin-add-form");
-if (adminForm) {
-  adminForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const title = byId("admin-title").value;
-    const category = byId("admin-category").value;
-    const link = byId("admin-link").value;
-    const description = byId("admin-desc").value;
-
-    if (!title || !link || !description) return;
-
-    let resources = JSON.parse(localStorage.getItem("chemvibe_resources")) || [];
-    resources.push({
-      id: Date.now().toString(),
-      title,
-      category,
-      price: "Free",
-      description,
-      link
-    });
-
-    localStorage.setItem("chemvibe_resources", JSON.stringify(resources));
-    adminForm.reset();
-    alert("Study resource published successfully!");
-  });
-}
-
-// --- 2. Publish Blog Post ---
-const blogForm = byId("admin-blog-form");
-if (blogForm) {
-  blogForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const title = byId("blog-title").value;
-    const date = byId("blog-date").value;
-    const link = byId("blog-link").value;
-    const summary = byId("blog-summary").value;
-
-    if (!title || !summary) return;
-
-    let blogPosts = JSON.parse(localStorage.getItem("chemvibe_blogs")) || [];
-    blogPosts.push({
-      id: Date.now().toString(),
-      title,
-      date,
-      link: link || "#",
-      summary
-    });
-
-    localStorage.setItem("chemvibe_blogs", JSON.stringify(blogPosts));
-    blogForm.reset();
-    alert("Blog article published successfully!");
-  });
-}
-
-// --- 3. Schedule Live Class ---
-const classForm = byId("admin-class-form");
-if (classForm) {
-  classForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const title = byId("class-title").value;
-    const host = byId("class-host").value;
-    const time = byId("class-time").value;
-    const link = byId("class-link").value;
-
-    if (!title || !host || !link) return;
-
-    let liveClasses = JSON.parse(localStorage.getItem("chemvibe_classes")) || [];
-    liveClasses.push({
-      id: Date.now().toString(),
-      title,
-      host,
-      time,
-      link
-    });
-
-    localStorage.setItem("chemvibe_classes", JSON.stringify(liveClasses));
-    classForm.reset();
-    alert("Live class scheduled successfully!");
-  });
-}
+// Inside your form submit event:
+await addDoc(collection(db, "resources"), {
+  title,
+  category,
+  price: "Free",
+  description,
+  link,
+  createdAt: Date.now()
+});
