@@ -1,6 +1,6 @@
 import { 
   auth, configured, 
-  signInWithEmailAndPassword, signOut, onAuthStateChanged 
+  signOut, onAuthStateChanged, updatePassword 
 } from "./firebase.js";
 
 const byId = (id) => document.getElementById(id);
@@ -39,17 +39,20 @@ if (configured && auth) {
     const profileAdminLink = byId("profile-admin-link");
     const signoutBtn = byId("signout-button");
     const profileSummary = byId("profile-summary");
+    const passwordSection = byId("password-section");
 
     if (user) {
       if (adminLink) adminLink.hidden = false;
       if (profileAdminLink) profileAdminLink.hidden = false;
       if (signoutBtn) signoutBtn.hidden = false;
       if (profileSummary) profileSummary.textContent = `Signed in as: ${user.email}`;
+      if (passwordSection) passwordSection.hidden = false;
     } else {
       if (adminLink) adminLink.hidden = true;
       if (profileAdminLink) profileAdminLink.hidden = true;
       if (signoutBtn) signoutBtn.hidden = true;
       if (profileSummary) profileSummary.textContent = "Not signed in.";
+      if (passwordSection) passwordSection.hidden = true;
     }
   });
 
@@ -64,6 +67,40 @@ if (configured && auth) {
       }
     });
   }
+}
+
+// --- Password Change Handling ---
+const passwordForm = byId("password-change-form");
+if (passwordForm) {
+  passwordForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const newPassword = byId("new-password").value;
+    const status = byId("password-status");
+
+    if (!configured || !auth.currentUser) {
+      status.textContent = "You must be signed in to change your password.";
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      status.textContent = "Password must be at least 6 characters long.";
+      return;
+    }
+
+    try {
+      status.textContent = "Updating password...";
+      await updatePassword(auth.currentUser, newPassword);
+      status.textContent = "Password updated successfully!";
+      passwordForm.reset();
+    } catch (error) {
+      console.error("Password update error:", error);
+      if (error.code === "auth/requires-recent-login") {
+        status.textContent = "For security, please sign out and sign back in before changing your password.";
+      } else {
+        status.textContent = `Failed to update password: ${error.message}`;
+      }
+    }
+  });
 }
 
 // --- Library Rendering & Filtering ---
