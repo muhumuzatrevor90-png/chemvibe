@@ -14,7 +14,7 @@ if (menuToggle && mainNav) {
   });
 }
 
-// --- Dynamic Data Store ---
+// --- Dynamic Data Store (Loaded directly from Admin / LocalStorage) ---
 let resources = JSON.parse(localStorage.getItem("chemvibe_resources")) || [];
 let blogPosts = JSON.parse(localStorage.getItem("chemvibe_blogs")) || [];
 let liveClasses = JSON.parse(localStorage.getItem("chemvibe_classes")) || [];
