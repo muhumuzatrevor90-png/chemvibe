@@ -32,15 +32,17 @@
     <!-- Permission Checking Box -->
     <div class="panel" id="admin-auth-panel" style="text-align: center; padding: 40px;">
       <h2 id="admin-status-title">Checking permissions...</h2>
-      <p class="muted" id="admin-status-desc">Verifying administrator access. If you are an admin, please sign in with your admin email.</p>
+      <p class="muted" id="admin-status-desc">Verifying administrator access. Please sign in with your admin email.</p>
       <div class="button-row" style="justify-content: center; margin-top: 20px;">
         <a class="button primary" href="signin.html" id="admin-signin-btn">Sign in as Admin</a>
         <a class="button secondary" href="index.html">Back to Library</a>
       </div>
     </div>
 
-    <!-- Actual Admin Posting Forms (Hidden until verified) -->
+    <!-- Actual Admin Posting Workspaces (Hidden until verified) -->
     <div id="admin-workspace-content" hidden>
+      
+      <!-- 1. Post Study Resource / Note -->
       <section class="panel form-panel">
         <h2>Add New Study Resource / Note</h2>
         <p class="muted">Publish notes, past papers, or guides to the student library.</p>
@@ -66,6 +68,55 @@
           <button class="button primary" type="submit" style="margin-top: 10px;">Publish Resource</button>
         </form>
       </section>
+
+      <!-- 2. Post Blog Article -->
+      <section class="panel form-panel">
+        <h2>Publish Blog Article</h2>
+        <p class="muted">Share chemistry tips, conceptual breakdowns, or updates on the blog.</p>
+        
+        <form id="admin-blog-form" style="margin-top: 20px;">
+          <label class="field-label">Article Title
+            <input class="field" id="blog-title" type="text" required placeholder="e.g., Understanding Enthalpy and Entropy">
+          </label>
+
+          <label class="field-label">Publication Date
+            <input class="field" id="blog-date" type="text" required placeholder="e.g., Nov 28, 2026">
+          </label>
+
+          <label class="field-label">Summary / Content
+            <textarea class="field" id="blog-summary" rows="4" required placeholder="A clear summary of the blog article..." style="height: auto; padding: 12px 16px;"></textarea>
+          </label>
+
+          <button class="button primary" type="submit" style="margin-top: 10px;">Publish Blog Post</button>
+        </form>
+      </section>
+
+      <!-- 3. Schedule Live Class -->
+      <section class="panel form-panel">
+        <h2>Schedule Live Class Session</h2>
+        <p class="muted">Set up interactive tutoring or Q&A sessions for students.</p>
+        
+        <form id="admin-class-form" style="margin-top: 20px;">
+          <label class="field-label">Session Title
+            <input class="field" id="class-title" type="text" required placeholder="e.g., Q&A Session: Organic Synthesis Pathways">
+          </label>
+
+          <label class="field-label">Host Name
+            <input class="field" id="class-host" type="text" required placeholder="e.g., Dr. Ruth Mbabazi">
+          </label>
+
+          <label class="field-label">Time & Schedule
+            <input class="field" id="class-time" type="text" required placeholder="e.g., Tomorrow, 4:00 PM EAT">
+          </label>
+
+          <label class="field-label">Meeting / Session Link
+            <input class="field" id="class-link" type="text" required placeholder="https://meet.google.com/...">
+          </label>
+
+          <button class="button primary" type="submit" style="margin-top: 10px;">Schedule Live Class</button>
+        </form>
+      </section>
+
     </div>
   </main>
 
