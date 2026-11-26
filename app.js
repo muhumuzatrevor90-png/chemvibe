@@ -14,7 +14,7 @@ if (menuToggle && mainNav) {
   });
 }
 
-// --- Dynamic Data Store (Loaded from Admin / LocalStorage or Empty) ---
+// --- Dynamic Data Store ---
 let resources = JSON.parse(localStorage.getItem("chemvibe_resources")) || [];
 let blogPosts = JSON.parse(localStorage.getItem("chemvibe_blogs")) || [];
 let liveClasses = JSON.parse(localStorage.getItem("chemvibe_classes")) || [];
@@ -116,15 +116,9 @@ function renderResources(list) {
       </div>
       <h3>${res.title}</h3>
       <p>${res.description}</p>
-      <button class="button primary view-res-btn" data-title="${res.title}">View resource</button>
+      <a class="button primary" href="${res.link}" target="_blank" style="margin-top: 10px; display: inline-block; text-align: center; text-decoration: none;">View resource (Drive)</a>
     `;
     container.appendChild(card);
-  });
-
-  document.querySelectorAll(".view-res-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      alert(`Opening resource: ${e.target.dataset.title}`);
-    });
   });
 }
 
@@ -179,7 +173,7 @@ function renderBlog() {
       <span class="muted">${post.date}</span>
       <h2>${post.title}</h2>
       <p>${post.summary}</p>
-      <a class="text-link" href="#">Read article →</a>
+      ${post.link && post.link !== "#" ? `<a class="text-link" href="${post.link}" target="_blank" style="display: inline-block; margin-top: 8px;">Read article / View file →</a>` : ""}
     `;
     container.appendChild(card);
   });
@@ -207,7 +201,7 @@ function renderClasses() {
       <h3>${cls.title}</h3>
       <p><strong>Host:</strong> ${cls.host}</p>
       <p><strong>Time:</strong> ${cls.time}</p>
-      <a class="button primary" href="${cls.link}" target="_blank" style="margin-top: 10px;">Join session</a>
+      <a class="button primary" href="${cls.link}" target="_blank" style="margin-top: 10px; display: inline-block; text-align: center; text-decoration: none;">Join session</a>
     `;
     container.appendChild(card);
   });
