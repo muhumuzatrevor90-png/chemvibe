@@ -16,7 +16,6 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Set your Admin email here
 const ADMIN_EMAILS = ["muhumuzatrevormbabazi@gmail.com"];
 
 const byId = (id) => document.getElementById(id);
@@ -31,7 +30,6 @@ function initMenu() {
   });
 }
 
-// Show Admin nav link if the logged-in user is an Admin
 function initGlobalAuthUI() {
   if (!configured) return;
   observeAuth((user) => {
@@ -42,6 +40,7 @@ function initGlobalAuthUI() {
   });
 }
 
+// 1. Dynamic Library
 async function initLibrary() {
   const container = byId("resource-list");
   if (!container) return;
@@ -133,20 +132,122 @@ async function initLibrary() {
   render();
 }
 
-function initBlog() {
+// 2. Dynamic Blog
+async function initBlog() {
+  const container = byId("blog-list");
+  if (!container) return;
   const search = byId("blog-search");
-  if (!search) return;
-  const cards = [...document.querySelectorAll(".blog-card")];
   const empty = byId("blog-empty");
-  search.addEventListener("input", () => {
-    const term = search.value.trim().toLowerCase();
+  let blogs = [];
+
+  if (configured && db) {
+    try {
+      const snapshot = await getDocs(collection(db, "blogs"));
+      blogs = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
+    } catch (error) {
+      console.error("Failed to load blog posts:", error);
+    }
+  }
+
+  function render() {
+    const term = search ? search.value.trim().toLowerCase() : "";
     let shown = 0;
-    cards.forEach((card) => {
-      card.hidden = Boolean(term) && !`${card.dataset.search} ${card.innerText}`.toLowerCase().includes(term);
-      if (!card.hidden) shown++;
+    container.innerHTML = "";
+
+    blogs.forEach((post) => {
+      const title = post.title || "Untitled Article";
+      const tagText = post.tag || "CHEMISTRY";
+      const bodyText = post.body || "";
+
+      const matchesText = !term || `${title} ${tagText} ${bodyText}`.toLowerCase().includes(term);
+
+      if (matchesText) {
+        shown++;
+        const card = document.createElement("article");
+        card.className = "card blog-card";
+
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = tagText.toUpperCase();
+
+        const h2 = document.createElement("h2");
+        h2.textContent = title;
+
+        const p = document.createElement("p");
+        p.textContent = bodyText;
+
+        card.append(tag, h2, p);
+        container.appendChild(card);
+      }
     });
+
     if (empty) empty.hidden = shown > 0;
+  }
+
+  if (search) search.addEventListener("input", render);
+  render();
+}
+
+// 3. Dynamic Live Classes
+async function initClasses() {
+  const container = byId("classes-list");
+  if (!container) return;
+  const empty = byId("classes-empty");
+  let classes = [];
+
+  if (configured && db) {
+    try {
+      const snapshot = await getDocs(collection(db, "classes"));
+      classes = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
+    } catch (error) {
+      console.error("Failed to load live classes:", error);
+    }
+  }
+
+  container.innerHTML = "";
+  let shown = 0;
+
+  classes.forEach((cls) => {
+    shown++;
+    const card = document.createElement("article");
+    card.className = "card resource-card";
+
+    const meta = document.createElement("div");
+    meta.className = "card-meta";
+
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.textContent = "LIVE SESSION";
+
+    const timeEl = document.createElement("span");
+    timeEl.className = "price";
+    timeEl.textContent = cls.time || "Upcoming";
+
+    meta.append(tag, timeEl);
+
+    const h3 = document.createElement("h3");
+    h3.textContent = cls.title || "Chemistry Class";
+
+    const p = document.createElement("p");
+    p.textContent = cls.description || "";
+
+    const btn = document.createElement("button");
+    btn.className = "button primary purchase-button";
+    btn.type = "button";
+    btn.textContent = "Join Session";
+    btn.addEventListener("click", () => {
+      if (cls.meetUrl) {
+        window.open(cls.meetUrl, "_blank", "noopener,noreferrer");
+      } else {
+        alert("Meeting link has not been posted yet.");
+      }
+    });
+
+    card.append(meta, h3, p, btn);
+    container.appendChild(card);
   });
+
+  if (empty) empty.hidden = shown > 0;
 }
 
 function initAuthForms() {
@@ -218,9 +319,8 @@ function initProfile() {
 
 function initAdminWorkspace() {
   const deniedBox = byId("admin-denied");
-  const workspaceBox = byId("admin-workspace");
-  const manageBox = byId("admin-manage");
-  if (!deniedBox || !workspaceBox) return;
+  const adminContent = byId("admin-content");
+  if (!deniedBox || !adminContent) return;
 
   const deniedMsg = byId("admin-denied-msg");
 
@@ -229,28 +329,28 @@ function initAdminWorkspace() {
     return;
   }
 
-  async function loadAdminResources() {
-    const list = byId("admin-resource-list");
+  async function renderCollectionList(collectionName, containerId, labelField, subField) {
+    const list = byId(containerId);
     if (!list) return;
-    list.innerHTML = "<p class='muted'>Loading documents…</p>";
+    list.innerHTML = "<p class='muted'>Loading…</p>";
     try {
-      const snapshot = await getDocs(collection(db, "resources"));
+      const snapshot = await getDocs(collection(db, collectionName));
       list.innerHTML = "";
       if (snapshot.empty) {
-        list.innerHTML = "<p class='muted'>No documents uploaded yet.</p>";
+        list.innerHTML = "<p class='muted'>Nothing published yet.</p>";
         return;
       }
       snapshot.forEach((docSnap) => {
         const data = docSnap.data();
         const row = document.createElement("div");
         row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--line); border-radius:10px; gap:12px;";
-        
+
         const info = document.createElement("div");
         const title = document.createElement("strong");
-        title.textContent = data.title || "Untitled";
+        title.textContent = data[labelField] || "Untitled";
         const meta = document.createElement("div");
         meta.className = "muted";
-        meta.textContent = `${data.type || "Notes"} • ${data.price || "Free"}`;
+        meta.textContent = data[subField] || "";
         info.append(title, meta);
 
         const delBtn = document.createElement("button");
@@ -258,14 +358,14 @@ function initAdminWorkspace() {
         delBtn.type = "button";
         delBtn.textContent = "Delete";
         delBtn.addEventListener("click", async () => {
-          if (!confirm(`Delete "${data.title}"?`)) return;
+          if (!confirm(`Delete "${data[labelField]}"?`)) return;
           delBtn.disabled = true;
           try {
-            await deleteDoc(doc(db, "resources", docSnap.id));
-            loadAdminResources();
+            await deleteDoc(doc(db, collectionName, docSnap.id));
+            refreshAllAdminLists();
           } catch (err) {
             console.error(err);
-            alert("Failed to delete document. Check Firestore rules.");
+            alert("Failed to delete item. Check Firestore rules.");
             delBtn.disabled = false;
           }
         });
@@ -275,59 +375,115 @@ function initAdminWorkspace() {
       });
     } catch (error) {
       console.error(error);
-      list.innerHTML = "<p class='muted'>Could not load documents.</p>";
+      list.innerHTML = "<p class='muted'>Could not load items.</p>";
     }
+  }
+
+  function refreshAllAdminLists() {
+    renderCollectionList("resources", "admin-resource-list", "title", "type");
+    renderCollectionList("blogs", "admin-blog-list", "title", "tag");
+    renderCollectionList("classes", "admin-class-list", "title", "time");
   }
 
   observeAuth((user) => {
     if (isAdminUser(user)) {
       deniedBox.hidden = true;
-      workspaceBox.hidden = false;
-      if (manageBox) {
-        manageBox.hidden = false;
-        loadAdminResources();
-      }
+      adminContent.hidden = false;
+      refreshAllAdminLists();
     } else {
       deniedBox.hidden = false;
-      workspaceBox.hidden = true;
-      if (manageBox) manageBox.hidden = true;
+      adminContent.hidden = true;
       deniedMsg.textContent = user
         ? `Access denied. Your account (${user.email}) does not have admin privileges.`
         : "Please sign in with your admin email to access this workspace.";
     }
   });
 
+  // 1. Submit Study Document
   const uploadForm = byId("upload-form");
   uploadForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const uploadStatus = byId("upload-status");
-    const uploadSubmit = byId("upload-submit");
-    const fileUrl = byId("res-url").value.trim();
+    const status = byId("upload-status");
+    const submit = byId("upload-submit");
+    if (!isAdminUser(auth.currentUser)) return;
 
-    if (!fileUrl || !isAdminUser(auth.currentUser)) return;
-
-    uploadSubmit.disabled = true;
-    uploadStatus.textContent = "Publishing document to library…";
-
+    submit.disabled = true;
+    status.textContent = "Publishing document…";
     try {
       await addDoc(collection(db, "resources"), {
         title: byId("res-title").value.trim(),
         type: byId("res-type").value,
         price: byId("res-price").value.trim(),
         description: byId("res-desc").value.trim(),
-        fileUrl: fileUrl,
+        fileUrl: byId("res-url").value.trim(),
         uploadedBy: auth.currentUser.uid,
         createdAt: serverTimestamp()
       });
-
-      uploadStatus.textContent = "Success! Document is now live in the library.";
+      status.textContent = "Document added to Library!";
       uploadForm.reset();
-      loadAdminResources();
+      refreshAllAdminLists();
     } catch (error) {
-      console.error("Upload error:", error);
-      uploadStatus.textContent = "Failed to add document. Ensure your Firestore rules allow admin writes.";
+      console.error(error);
+      status.textContent = "Failed to add document. Check Firestore rules.";
     } finally {
-      uploadSubmit.disabled = false;
+      submit.disabled = false;
+    }
+  });
+
+  // 2. Submit Blog Article
+  const blogForm = byId("blog-form");
+  blogForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const status = byId("blog-status");
+    const submit = byId("blog-submit");
+    if (!isAdminUser(auth.currentUser)) return;
+
+    submit.disabled = true;
+    status.textContent = "Publishing article…";
+    try {
+      await addDoc(collection(db, "blogs"), {
+        title: byId("blog-title").value.trim(),
+        tag: byId("blog-tag").value.trim(),
+        body: byId("blog-body").value.trim(),
+        createdAt: serverTimestamp()
+      });
+      status.textContent = "Article published to Blog!";
+      blogForm.reset();
+      refreshAllAdminLists();
+    } catch (error) {
+      console.error(error);
+      status.textContent = "Failed to publish article. Check Firestore rules.";
+    } finally {
+      submit.disabled = false;
+    }
+  });
+
+  // 3. Submit Live Class
+  const classForm = byId("class-form");
+  classForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const status = byId("class-status");
+    const submit = byId("class-submit");
+    if (!isAdminUser(auth.currentUser)) return;
+
+    submit.disabled = true;
+    status.textContent = "Posting live class…";
+    try {
+      await addDoc(collection(db, "classes"), {
+        title: byId("class-title").value.trim(),
+        time: byId("class-time").value.trim(),
+        description: byId("class-desc").value.trim(),
+        meetUrl: byId("class-url").value.trim(),
+        createdAt: serverTimestamp()
+      });
+      status.textContent = "Live class posted!";
+      classForm.reset();
+      refreshAllAdminLists();
+    } catch (error) {
+      console.error(error);
+      status.textContent = "Failed to post class. Check Firestore rules.";
+    } finally {
+      submit.disabled = false;
     }
   });
 }
@@ -336,6 +492,7 @@ initMenu();
 initGlobalAuthUI();
 initLibrary();
 initBlog();
+initClasses();
 initAuthForms();
 initProfile();
 initAdminWorkspace();
