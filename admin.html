@@ -26,7 +26,7 @@
     <section class="page-hero">
       <span class="eyebrow">ADMIN CONTROL</span>
       <h1>Admin Workspace</h1>
-      <p>Manage study documents, blog articles, and live classes.</p>
+      <p>Manage study documents, blog articles, live classes, and notifications.</p>
     </section>
 
     <!-- Permission Checking Box -->
@@ -59,6 +59,10 @@
               <option value="Past paper">Past paper</option>
               <option value="Guide">Guide</option>
             </select>
+          </label>
+
+          <label class="field-label">Price (e.g., Free, $5.00, UGX 5000)
+            <input class="field" id="admin-price" type="text" required value="Free" placeholder="Free">
           </label>
 
           <label class="field-label">Google Drive Link (URL)
@@ -125,10 +129,32 @@
         </form>
       </section>
 
-      <!-- 4. Manage / Delete Existing Posts -->
+      <!-- 4. Broadcast Student Notification -->
+      <section class="panel form-panel" style="margin-bottom: 24px;">
+        <h2>Broadcast Student Notification</h2>
+        <p class="muted">Send real-time alerts or announcements to the notifications page.</p>
+        
+        <form id="admin-notif-form" style="margin-top: 20px;">
+          <label class="field-label">Notification Title
+            <input class="field" id="notif-title" type="text" required placeholder="e.g., Exam Schedule Updated">
+          </label>
+
+          <label class="field-label">Date / Tag
+            <input class="field" id="notif-date" type="text" required placeholder="e.g., Today, 2:00 PM">
+          </label>
+
+          <label class="field-label">Message Content
+            <textarea class="field" id="notif-message" rows="3" required placeholder="Type your announcement here..." style="height: auto; padding: 12px 16px;"></textarea>
+          </label>
+
+          <button class="button primary" type="submit" style="margin-top: 10px;">Broadcast Notification</button>
+        </form>
+      </section>
+
+      <!-- 5. Manage / Delete Existing Posts -->
       <section class="panel form-panel">
         <h2>Manage Published Content</h2>
-        <p class="muted">View and delete existing resources, blog articles, or live classes.</p>
+        <p class="muted">View and delete existing resources, blog articles, live classes, or notifications.</p>
         
         <div style="margin-top: 20px;">
           <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Resources</h3>
@@ -138,7 +164,10 @@
           <div id="admin-blog-list" style="margin-bottom: 24px;"></div>
 
           <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Live Classes</h3>
-          <div id="admin-class-list"></div>
+          <div id="admin-class-list" style="margin-bottom: 24px;"></div>
+
+          <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Notifications</h3>
+          <div id="admin-notif-list"></div>
         </div>
       </section>
 
