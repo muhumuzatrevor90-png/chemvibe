@@ -1,4 +1,4 @@
-import { auth, configured, signInWithEmailAndPassword } from "./firebase.js";
+import { auth, configured, signInWithEmailAndPassword, sendPasswordResetEmail } from "./firebase.js";
 
 const byId = (id) => document.getElementById(id);
 
@@ -51,6 +51,41 @@ if (form) {
         status.textContent = `Sign-in failed: ${error.message}`;
       }
       submitBtn.disabled = false;
+    }
+  });
+}
+
+// Forgot Password Handler
+const forgotLink = byId("forgot-password-link");
+if (forgotLink) {
+  forgotLink.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const emailInput = byId("signin-email");
+    const status = byId("signin-status");
+    const email = emailInput ? emailInput.value.trim() : "";
+
+    if (!email) {
+      status.textContent = "Please enter your email address above first, then click 'Forgot password?'.";
+      if (emailInput) emailInput.focus();
+      return;
+    }
+
+    if (!configured || !auth) {
+      status.textContent = "Firebase is not configured correctly.";
+      return;
+    }
+
+    try {
+      status.textContent = "Sending password reset email...";
+      await sendPasswordResetEmail(auth, email);
+      status.textContent = "Password reset link sent! Check your inbox.";
+    } catch (error) {
+      console.error("Password reset error:", error);
+      if (error.code === "auth/user-not-found") {
+        status.textContent = "No account found with this email address.";
+      } else {
+        status.textContent = `Failed to send reset email: ${error.message}`;
+      }
     }
   });
 }
