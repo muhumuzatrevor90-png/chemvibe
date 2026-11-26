@@ -2,32 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Create account — ChemVibe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account — ChemVibe</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="auth-page">
-  <main class="auth-layout">
-    <section class="auth-intro">
-      <a class="brand brand-light" href="index.html"><span class="logo-mark"><span></span><i></i><b></b></span>ChemVibe</a>
-      <div><span class="eyebrow">YOUR CHEMISTRY STUDY SPACE</span><h1>Start your<br><span>ChemVibe era.</span></h1><p>Create your account to make your study experience yours.</p></div>
-      <small>Independent student project</small>
-    </section>
-    <section class="auth-side">
-      <form class="auth-card" id="signup-form">
+  <div class="auth-layout">
+    <div class="auth-intro">
+      <div>
+        <a class="brand brand-light" href="index.html">
+          <span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>ChemVibe
+        </a>
+        <span class="eyebrow" style="margin-top: 24px;">YOUR CHEMISTRY STUDY SPACE</span>
+      </div>
+      <div>
+        <h1>Join <span>ChemVibe</span> today.</h1>
+        <p>Create your student account to access premium resources, live classes, and personal notes.</p>
+      </div>
+      <small>© ChemVibe Study Platform</small>
+    </div>
+
+    <div class="auth-side">
+      <div class="auth-card">
         <h2>Create account</h2>
-        <p class="muted">Use your email and create a password.</p>
-        <label class="field-label">Display name<input class="field" id="signup-name" type="text" maxlength="60" autocomplete="name" required placeholder="Your name"></label>
-        <label class="field-label">Email<input class="field" id="signup-email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
-        <label class="field-label">Password<input class="field" id="signup-password" type="password" minlength="6" autocomplete="new-password" required placeholder="At least 6 characters"></label>
-        <label class="field-label">Confirm password<input class="field" id="signup-confirm" type="password" minlength="6" autocomplete="new-password" required placeholder="Enter password again"></label>
-        <button class="button primary full" id="signup-submit" type="submit">Create account</button>
-        <p class="status" id="signup-status" role="status" aria-live="polite"></p>
-        <p class="auth-foot">Already registered? <a href="signin.html">Sign in</a></p>
+        <p class="muted">Fill in your details to get started.</p>
+        
+        <form id="signup-form">
+          <label class="field-label">Email
+            <input class="field" id="signup-email" type="email" required placeholder="student@university.edu">
+          </label>
+          
+          <label class="field-label">Password (min. 6 characters)
+            <div style="position: relative;">
+              <input class="field" id="signup-password" type="password" required placeholder="••••••••" style="padding-right: 44px; width: 100%;">
+              <button type="button" id="toggle-signup-password" aria-label="Toggle password visibility" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.1rem; color: var(--muted);">👁️</button>
+            </div>
+          </label>
+
+          <button class="button primary full" type="submit" id="signup-submit" style="margin-top: 8px;">Create account</button>
+          <p class="status" id="signup-status" role="status" aria-live="polite"></p>
+        </form>
+
+        <p class="auth-foot">Already have an account? <a href="signin.html">Sign in</a></p>
         <a class="back-link" href="index.html">← Back to library</a>
-      </form>
-    </section>
-  </main>
-  <script type="module" src="app.js"></script>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="auth-signup.js"></script>
 </body>
 </html>
