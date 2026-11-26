@@ -24,16 +24,12 @@ body {
 }
 
 .site-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: var(--card-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px 32px;
+  background: var(--card-bg);
   border-bottom: 1px solid var(--line);
-  box-shadow: 0 4px 12px rgba(11, 25, 44, 0.06);
 }
 
 .brand {
