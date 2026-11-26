@@ -1,8 +1,6 @@
 import { auth, configured, onAuthStateChanged } from "./firebase.js";
 
 const byId = (id) => document.getElementById(id);
-
-// Authorized Admin Email
 const ADMIN_EMAIL = "muhumuzatrevormbabazi@gmail.com";
 
 // --- Mobile Navigation Toggle ---
@@ -23,25 +21,13 @@ if (configured && auth) {
     const statusDesc = byId("admin-status-desc");
     const signinBtn = byId("admin-signin-btn");
 
-    if (user) {
-      if (user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-        if (authPanel) authPanel.hidden = true;
-        if (workspaceContent) workspaceContent.hidden = false;
-      } else {
-        if (statusTitle) statusTitle.textContent = "Access Denied";
-        if (statusDesc) statusDesc.textContent = `Signed in as ${user.email}. This account does not have administrator privileges.`;
-        if (signinBtn) {
-          signinBtn.textContent = "Sign in with Admin Account";
-          signinBtn.href = "signin.html";
-        }
-      }
+    if (user && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+      if (authPanel) authPanel.hidden = true;
+      if (workspaceContent) workspaceContent.hidden = false;
     } else {
-      if (statusTitle) statusTitle.textContent = "Checking permissions...";
-      if (statusDesc) statusDesc.textContent = "Please sign in with your admin email to access the workspace.";
-      if (signinBtn) {
-        signinBtn.textContent = "Sign in as Admin";
-        signinBtn.href = "signin.html";
-      }
+      if (statusTitle) statusTitle.textContent = "Access Denied";
+      if (statusDesc) statusDesc.textContent = "This account does not have administrator privileges.";
+      if (signinBtn) signinBtn.href = "signin.html";
     }
   });
 }
@@ -53,9 +39,10 @@ if (adminForm) {
     e.preventDefault();
     const title = byId("admin-title").value;
     const category = byId("admin-category").value;
+    const link = byId("admin-link").value;
     const description = byId("admin-desc").value;
 
-    if (!title || !description) return;
+    if (!title || !link || !description) return;
 
     let resources = JSON.parse(localStorage.getItem("chemvibe_resources")) || [];
     resources.push({
@@ -64,7 +51,7 @@ if (adminForm) {
       category,
       price: "Free",
       description,
-      link: "#"
+      link
     });
 
     localStorage.setItem("chemvibe_resources", JSON.stringify(resources));
@@ -80,6 +67,7 @@ if (blogForm) {
     e.preventDefault();
     const title = byId("blog-title").value;
     const date = byId("blog-date").value;
+    const link = byId("blog-link").value;
     const summary = byId("blog-summary").value;
 
     if (!title || !summary) return;
@@ -89,6 +77,7 @@ if (blogForm) {
       id: Date.now().toString(),
       title,
       date,
+      link: link || "#",
       summary
     });
 
@@ -108,7 +97,7 @@ if (classForm) {
     const time = byId("class-time").value;
     const link = byId("class-link").value;
 
-    if (!title || !host) return;
+    if (!title || !host || !link) return;
 
     let liveClasses = JSON.parse(localStorage.getItem("chemvibe_classes")) || [];
     liveClasses.push({
