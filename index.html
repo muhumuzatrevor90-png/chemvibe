@@ -22,12 +22,52 @@
       <a class="nav-button" href="signin.html">Sign in</a>
     </nav>
   </header>
+
+  <!-- Continuous Chemistry Ticker -->
+  <div class="chem-marquee" aria-hidden="true">
+    <div class="chem-marquee-track">
+      <span class="chem-pill"><b>C₆H₆</b> Aromaticity &amp; Resonance</span>
+      <span class="chem-pill"><b>ΔG = ΔH - TΔS</b> Chemical Thermodynamics</span>
+      <span class="chem-pill"><b>pH = pKa + log([A⁻]/[HA])</b> Buffer Equilibria</span>
+      <span class="chem-pill"><b>PV = nRT</b> Ideal Gas Laws</span>
+      <span class="chem-pill"><b>E°cell</b> Electrochemistry &amp; Redox</span>
+      <span class="chem-pill"><b>SN1 / SN2</b> Reaction Mechanisms</span>
+      <!-- Duplicate for seamless loop -->
+      <span class="chem-pill"><b>C₆H₆</b> Aromaticity &amp; Resonance</span>
+      <span class="chem-pill"><b>ΔG = ΔH - TΔS</b> Chemical Thermodynamics</span>
+      <span class="chem-pill"><b>pH = pKa + log([A⁻]/[HA])</b> Buffer Equilibria</span>
+      <span class="chem-pill"><b>PV = nRT</b> Ideal Gas Laws</span>
+      <span class="chem-pill"><b>E°cell</b> Electrochemistry &amp; Redox</span>
+      <span class="chem-pill"><b>SN1 / SN2</b> Reaction Mechanisms</span>
+    </div>
+  </div>
+
   <main class="container">
     <section class="hero">
-      <span class="eyebrow">CHEMISTRY, WITH A BETTER VIBE</span>
-      <h1>Make chemistry<br><span>click.</span></h1>
-      <p>Find clear study resources, explore chemistry concepts, and stay on track with your university studies.</p>
-      <a class="button primary" href="#library">Explore resources</a>
+      <div class="hero-visual-wrap">
+        <div style="flex: 1; min-width: 260px;">
+          <span class="eyebrow">CHEMISTRY, WITH A BETTER VIBE</span>
+          <h1>Make chemistry<br><span>click.</span></h1>
+          <p>Find clear study resources, explore chemistry concepts, and stay on track with your university studies.</p>
+          <a class="button primary" href="#library">Explore resources</a>
+        </div>
+        <!-- Custom Chemistry Molecular & Flask Illustration -->
+        <div class="hero-art" aria-hidden="true">
+          <svg width="160" height="160" viewBox="0 0 120 120" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Benzene Hexagon -->
+            <polygon points="60,15 95,35 95,75 60,95 25,75 25,35" stroke="#38bdf8"/>
+            <circle cx="60" cy="55" r="20" stroke="#0ea5e9" stroke-dasharray="4 3"/>
+            <!-- Orbital Electron Nodes -->
+            <circle cx="60" cy="15" r="4" fill="#38bdf8"/>
+            <circle cx="95" cy="35" r="4" fill="#0ea5e9"/>
+            <circle cx="95" cy="75" r="4" fill="#38bdf8"/>
+            <circle cx="60" cy="95" r="4" fill="#0ea5e9"/>
+            <circle cx="25" cy="75" r="4" fill="#38bdf8"/>
+            <circle cx="25" cy="35" r="4" fill="#0ea5e9"/>
+            <text x="48" y="59" fill="#ffffff" stroke="none" font-family="monospace" font-size="13" font-weight="bold">C₆H₆</text>
+          </svg>
+        </div>
+      </div>
     </section>
 
     <section class="search-panel">
@@ -86,7 +126,7 @@
       </div>
     </section>
   </main>
-  <footer class="footer">ChemVibe is an independent student project created by Trevor Mbabazi and is not affiliated with a university.</footer>
+  <footer class="footer">ChemVibe is an independent student project created by Trevor Mbabazi with educational content provided by Dr. Ruth Mbabazi.</footer>
   <script type="module" src="app.js"></script>
 </body>
 </html>
