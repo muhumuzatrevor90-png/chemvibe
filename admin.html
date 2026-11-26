@@ -39,11 +39,11 @@
       </div>
     </div>
 
-    <!-- Actual Admin Posting Workspaces (Hidden until verified) -->
+    <!-- Actual Admin Posting & Management Workspaces (Hidden until verified) -->
     <div id="admin-workspace-content" hidden>
       
       <!-- 1. Post Study Resource / Note -->
-      <section class="panel form-panel">
+      <section class="panel form-panel" style="margin-bottom: 24px;">
         <h2>Add New Study Resource / Note</h2>
         <p class="muted">Publish notes, past papers, or guides to the student library.</p>
         
@@ -74,7 +74,7 @@
       </section>
 
       <!-- 2. Post Blog Article -->
-      <section class="panel form-panel">
+      <section class="panel form-panel" style="margin-bottom: 24px;">
         <h2>Publish Blog Article</h2>
         <p class="muted">Share chemistry tips, conceptual breakdowns, or updates on the blog.</p>
         
@@ -100,7 +100,7 @@
       </section>
 
       <!-- 3. Schedule Live Class -->
-      <section class="panel form-panel">
+      <section class="panel form-panel" style="margin-bottom: 24px;">
         <h2>Schedule Live Class Session</h2>
         <p class="muted">Set up interactive tutoring or Q&A sessions for students.</p>
         
@@ -123,6 +123,23 @@
 
           <button class="button primary" type="submit" style="margin-top: 10px;">Schedule Live Class</button>
         </form>
+      </section>
+
+      <!-- 4. Manage / Delete Existing Posts -->
+      <section class="panel form-panel">
+        <h2>Manage Published Content</h2>
+        <p class="muted">View and delete existing resources, blog articles, or live classes.</p>
+        
+        <div style="margin-top: 20px;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Resources</h3>
+          <div id="admin-resource-list" style="margin-bottom: 24px;"></div>
+
+          <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Blog Posts</h3>
+          <div id="admin-blog-list" style="margin-bottom: 24px;"></div>
+
+          <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Live Classes</h3>
+          <div id="admin-class-list"></div>
+        </div>
       </section>
 
     </div>
