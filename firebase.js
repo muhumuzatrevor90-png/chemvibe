@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 import { 
   getAuth, 
   signInWithEmailAndPassword, 
@@ -9,30 +10,35 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// TODO: Replace with your actual Firebase project configuration credentials
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDoBJMiGxHT0XbO6xTsbp41yLzYdYSwM8o",
+  authDomain: "chemvibe.firebaseapp.com",
+  projectId: "chemvibe",
+  storageBucket: "chemvibe.firebasestorage.app",
+  messagingSenderId: "842828658625",
+  appId: "1:842828658625:web:797d90fb084d1276f1a140",
+  measurementId: "G-HBTZTN90DW"
 };
 
+// Initialize Firebase
 let app;
 let auth;
 let db;
+let analytics;
 let configured = false;
 
 try {
-  if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
-    app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    db = getFirestore(app);
-    configured = true;
-  } else {
-    console.warn("Firebase config is using placeholder values. Please update firebase.js with your real credentials.");
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+  
+  // Analytics can run only in browser environments
+  if (typeof window !== "undefined") {
+    analytics = getAnalytics(app);
   }
+  
+  configured = true;
 } catch (error) {
   console.error("Firebase initialization error:", error);
 }
@@ -41,6 +47,7 @@ export {
   app, 
   auth, 
   db, 
+  analytics, 
   configured, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
