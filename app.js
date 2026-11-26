@@ -1,146 +1,218 @@
-// Add these functions inside app.js and call them at the bottom
+import { 
+  auth, db, configured, 
+  collection, getDocs, addDoc, deleteDoc, doc, 
+  signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged 
+} from "./firebase.js";
 
-function initPasswordToggle() {
-  document.querySelectorAll(".password-toggle").forEach((button) => {
-    button.addEventListener("click", () => {
-      const targetId = button.dataset.target;
-      const input = byId(targetId);
-      if (!input) return;
-      if (input.type === "password") {
-        input.type = "text";
-        button.textContent = "🙈"; // Hide icon state
-      } else {
-        input.type = "password";
-        button.textContent = "👁️"; // Show icon state
-      }
-    });
+const byId = (id) => document.getElementById(id);
+
+// --- Mobile Navigation Toggle ---
+const menuToggle = byId("menu-toggle");
+const mainNav = byId("main-nav");
+if (menuToggle && mainNav) {
+  menuToggle.addEventListener("click", () => {
+    mainNav.classList.toggle("open");
   });
 }
 
-function initPasswordChange() {
-  const form = byId("password-change-form");
-  if (!form) return;
+// --- Global Data Store & State ---
+let resources = [
+  { id: "1", title: "Physical Chemistry Thermodynamics Notes", category: "Notes", price: "Free", description: "Comprehensive lecture notes covering the first, second, and third laws of thermodynamics.", link: "#" },
+  { id: "2", title: "Organic Chemistry Reaction Mechanisms Practice", category: "Practice", price: "Free", description: "Step-by-step problem sets focusing on nucleophilic substitution and elimination reactions.", link: "#" },
+  { id: "3", title: "Inorganic Chemistry Past Paper (2024)", category: "Past paper", price: "Free", description: "University exam paper with complete answer keys for coordination complexes and crystal field theory.", link: "#" },
+  { id: "4", title: "Analytical Chemistry Spectroscopy Guide", category: "Guide", price: "Free", description: "A quick-reference study guide for NMR, IR, and UV-Vis spectroscopy interpretation.", link: "#" }
+];
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const status = byId("password-status");
-    const submit = byId("password-submit");
-    const currentPass = byId("current-password").value;
-    const newPass = byId("new-password").value;
+let blogPosts = [
+  { id: "1", title: "Understanding Enthalpy and Entropy Changes", date: "Nov 20, 2026", summary: "A clear breakdown of how spontaneity is determined by Gibbs free energy in chemical reactions." },
+  { id: "2", title: "Mastering Acid-Base Titration Curves", date: "Nov 15, 2026", summary: "Key tips for identifying equivalence points and buffer regions in complex titrations." }
+];
 
-    if (!configured || !auth || !auth.currentUser) {
-      status.textContent = "You must be signed in to change your password.";
-      return;
-    }
+let liveClasses = [
+  { id: "1", title: "Q&A Session: Organic Synthesis Pathways", host: "Dr. Ruth Mbabazi", time: "Tomorrow, 4:00 PM EAT", link: "#" },
+  { id: "2", title: "Problem Solving: Electrochemistry Cell Potentials", host: "Trevor Mbabazi", time: "Friday, 6:00 PM EAT", link: "#" }
+];
 
-    if (newPass.length < 6) {
-      status.textContent = "New password must be at least 6 characters long.";
-      return;
-    }
+// --- Authentication State Management ---
+if (configured && auth) {
+  onAuthStateChanged(auth, (user) => {
+    const adminLink = byId("nav-admin");
+    const profileAdminLink = byId("profile-admin-link");
+    const signoutBtn = byId("signout-button");
+    const profileSummary = byId("profile-summary");
 
-    submit.disabled = true;
-    status.textContent = "Updating password...";
-
-    try {
-      // Re-authenticate user before updating password for security
-      const credential = firebase.auth.EmailAuthProvider.credential(auth.currentUser.email, currentPass);
-      await auth.currentUser.reauthenticateWithCredential(credential);
-      
-      await auth.currentUser.updatePassword(newPass);
-      status.textContent = "Password updated successfully!";
-      form.reset();
-    } catch (error) {
-      console.error(error);
-      if (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
-        status.textContent = "Incorrect current password.";
-      } else {
-        status.textContent = "Failed to update password. Please try signing in again.";
-      }
-    } finally {
-      submit.disabled = false;
+    if (user) {
+      if (adminLink) adminLink.hidden = false;
+      if (profileAdminLink) profileAdminLink.hidden = false;
+      if (signoutBtn) signoutBtn.hidden = false;
+      if (profileSummary) profileSummary.textContent = `Signed in as: ${user.email}`;
+    } else {
+      if (adminLink) adminLink.hidden = true;
+      if (profileAdminLink) profileAdminLink.hidden = true;
+      if (signoutBtn) signoutBtn.hidden = true;
+      if (profileSummary) profileSummary.textContent = "Not signed in.";
     }
   });
-}
 
-// Make sure to execute these initialization functions at the bottom of app.js:
-initPasswordToggle();
-initPasswordChange();
-function initPasswordUI() {
-  const openBtn = byId("open-password-btn");
-  const closeBtn = byId("close-password-btn");
-  const panel = byId("password-change-panel");
-
-  if (openBtn && panel) {
-    openBtn.addEventListener("click", () => {
-      panel.hidden = false;
-      panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  const signoutBtn = byId("signout-button");
+  if (signoutBtn) {
+    signoutBtn.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        window.location.href = "signin.html";
+      } catch (err) {
+        console.error("Sign out error:", err);
+      }
     });
   }
+}
 
-  if (closeBtn && panel) {
-    closeBtn.addEventListener("click", () => {
-      panel.hidden = true;
-    });
+// --- Library Rendering & Filtering ---
+function renderResources(list) {
+  const container = byId("resource-list");
+  const emptyState = byId("resource-empty");
+  const countLabel = byId("resource-count");
+  if (!container) return;
+
+  container.innerHTML = "";
+  if (countLabel) countLabel.textContent = `${list.length} resources`;
+
+  if (list.length === 0) {
+    if (emptyState) emptyState.hidden = false;
+    return;
   }
+  if (emptyState) emptyState.hidden = true;
 
-  document.querySelectorAll(".password-toggle").forEach((button) => {
-    button.addEventListener("click", () => {
-      const input = byId(button.dataset.target);
-      if (!input) return;
-      if (input.type === "password") {
-        input.type = "text";
-        button.textContent = "🙈";
-      } else {
-        input.type = "password";
-        button.textContent = "👁️";
-      }
+  list.forEach((res) => {
+    const card = document.createElement("div");
+    card.className = "card resource-card";
+    card.innerHTML = `
+      <div class="card-meta">
+        <span class="tag">${res.category}</span>
+        <span class="price">${res.price || "Free"}</span>
+      </div>
+      <h3>${res.title}</h3>
+      <p>${res.description}</p>
+      <button class="button primary view-res-btn" data-title="${res.title}">View resource</button>
+    `;
+    container.appendChild(card);
+  });
+
+  document.querySelectorAll(".view-res-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      alert(`Opening resource: ${e.target.dataset.title}`);
     });
   });
 }
 
-function initPasswordChange() {
-  const form = byId("password-change-form");
-  if (!form) return;
+const searchInput = byId("resource-search");
+const filterChips = document.querySelectorAll("#resource-filters .chip");
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const status = byId("password-status");
-    const submit = byId("password-submit");
-    const currentPass = byId("current-password").value;
-    const newPass = byId("new-password").value;
+function filterAndRenderResources() {
+  const query = searchInput ? searchInput.value.toLowerCase() : "";
+  const activeChip = document.querySelector("#resource-filters .chip.active");
+  const selectedType = activeChip ? activeChip.dataset.type : "all";
 
-    if (!configured || !auth || !auth.currentUser) {
-      status.textContent = "You must be signed in to change your password.";
-      return;
-    }
-
-    if (newPass.length < 6) {
-      status.textContent = "New password must be at least 6 characters long.";
-      return;
-    }
-
-    submit.disabled = true;
-    status.textContent = "Updating password...";
-
-    try {
-      const credential = firebase.auth.EmailAuthProvider.credential(auth.currentUser.email, currentPass);
-      await auth.currentUser.reauthenticateWithCredential(credential);
-      await auth.currentUser.updatePassword(newPass);
-      status.textContent = "Password updated successfully!";
-      form.reset();
-    } catch (error) {
-      console.error(error);
-      if (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
-        status.textContent = "Incorrect current password.";
-      } else {
-        status.textContent = "Failed to update password. Please sign in again and retry.";
-      }
-    } finally {
-      submit.disabled = false;
-    }
+  const filtered = resources.filter((res) => {
+    const matchesQuery = res.title.toLowerCase().includes(query) || res.description.toLowerCase().includes(query);
+    const matchesType = selectedType === "all" || res.category.toLowerCase() === selectedType.toLowerCase();
+    return matchesQuery && matchesType;
   });
+
+  renderResources(filtered);
 }
 
-// Call both at the bottom of app.js:
-initPasswordUI();
-initPasswordChange();
+if (searchInput) {
+  searchInput.addEventListener("input", filterAndRenderResources);
+}
+
+filterChips.forEach((chip) => {
+  chip.addEventListener("click", () => {
+    filterChips.forEach((c) => c.classList.remove("active"));
+    chip.classList.add("active");
+    filterAndRenderResources();
+  });
+});
+
+renderResources(resources);
+
+// --- Blog Rendering ---
+function renderBlog() {
+  const container = byId("blog-list");
+  const emptyState = byId("blog-empty");
+  if (!container) return;
+
+  container.innerHTML = "";
+  if (blogPosts.length === 0) {
+    if (emptyState) emptyState.hidden = false;
+    return;
+  }
+  if (emptyState) emptyState.hidden = true;
+
+  blogPosts.forEach((post) => {
+    const card = document.createElement("div");
+    card.className = "card blog-card";
+    card.innerHTML = `
+      <span class="muted">${post.date}</span>
+      <h2>${post.title}</h2>
+      <p>${post.summary}</p>
+      <a class="text-link" href="#">Read article →</a>
+    `;
+    container.appendChild(card);
+  });
+}
+renderBlog();
+
+// --- Live Classes Rendering ---
+function renderClasses() {
+  const container = byId("classes-list");
+  const emptyState = byId("classes-empty");
+  if (!container) return;
+
+  container.innerHTML = "";
+  if (liveClasses.length === 0) {
+    if (emptyState) emptyState.hidden = false;
+    return;
+  }
+  if (emptyState) emptyState.hidden = true;
+
+  liveClasses.forEach((cls) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <span class="tag">Live Session</span>
+      <h3>${cls.title}</h3>
+      <p><strong>Host:</strong> ${cls.host}</p>
+      <p><strong>Time:</strong> ${cls.time}</p>
+      <a class="button primary" href="${cls.link}" target="_blank" style="margin-top: 10px;">Join session</a>
+    `;
+    container.appendChild(card);
+  });
+}
+renderClasses();
+
+// --- Admin Workspace Handling ---
+const adminForm = byId("admin-add-form");
+if (adminForm) {
+  adminForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = byId("admin-title").value;
+    const category = byId("admin-category").value;
+    const description = byId("admin-desc").value;
+
+    if (!title || !description) return;
+
+    resources.push({
+      id: Date.now().toString(),
+      title,
+      category,
+      price: "Free",
+      description,
+      link: "#"
+    });
+
+    adminForm.reset();
+    alert("Resource added successfully!");
+    renderResources(resources);
+  });
+}
