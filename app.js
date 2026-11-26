@@ -14,23 +14,10 @@ if (menuToggle && mainNav) {
   });
 }
 
-// --- Global Data Store & State ---
-let resources = [
-  { id: "1", title: "Physical Chemistry Thermodynamics Notes", category: "Notes", price: "Free", description: "Comprehensive lecture notes covering the first, second, and third laws of thermodynamics.", link: "#" },
-  { id: "2", title: "Organic Chemistry Reaction Mechanisms Practice", category: "Practice", price: "Free", description: "Step-by-step problem sets focusing on nucleophilic substitution and elimination reactions.", link: "#" },
-  { id: "3", title: "Inorganic Chemistry Past Paper (2024)", category: "Past paper", price: "Free", description: "University exam paper with complete answer keys for coordination complexes and crystal field theory.", link: "#" },
-  { id: "4", title: "Analytical Chemistry Spectroscopy Guide", category: "Guide", price: "Free", description: "A quick-reference study guide for NMR, IR, and UV-Vis spectroscopy interpretation.", link: "#" }
-];
-
-let blogPosts = [
-  { id: "1", title: "Understanding Enthalpy and Entropy Changes", date: "Nov 20, 2026", summary: "A clear breakdown of how spontaneity is determined by Gibbs free energy in chemical reactions." },
-  { id: "2", title: "Mastering Acid-Base Titration Curves", date: "Nov 15, 2026", summary: "Key tips for identifying equivalence points and buffer regions in complex titrations." }
-];
-
-let liveClasses = [
-  { id: "1", title: "Q&A Session: Organic Synthesis Pathways", host: "Dr. Ruth Mbabazi", time: "Tomorrow, 4:00 PM EAT", link: "#" },
-  { id: "2", title: "Problem Solving: Electrochemistry Cell Potentials", host: "Trevor Mbabazi", time: "Friday, 6:00 PM EAT", link: "#" }
-];
+// --- Dynamic Data Store (Loaded from Admin / LocalStorage or Empty) ---
+let resources = JSON.parse(localStorage.getItem("chemvibe_resources")) || [];
+let blogPosts = JSON.parse(localStorage.getItem("chemvibe_blogs")) || [];
+let liveClasses = JSON.parse(localStorage.getItem("chemvibe_classes")) || [];
 
 // --- Authentication State Management ---
 if (configured && auth) {
@@ -226,29 +213,3 @@ function renderClasses() {
   });
 }
 renderClasses();
-
-// --- Admin Workspace Handling ---
-const adminForm = byId("admin-add-form");
-if (adminForm) {
-  adminForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const title = byId("admin-title").value;
-    const category = byId("admin-category").value;
-    const description = byId("admin-desc").value;
-
-    if (!title || !description) return;
-
-    resources.push({
-      id: Date.now().toString(),
-      title,
-      category,
-      price: "Free",
-      description,
-      link: "#"
-    });
-
-    adminForm.reset();
-    alert("Resource added successfully!");
-    renderResources(resources);
-  });
-}
