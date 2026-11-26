@@ -1,13 +1,15 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Workspace — ChemVibe</title><link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Workspace — ChemVibe</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="index.html"><span class="logo-mark"><span></span><i></i><b></b></span>ChemVibe</a>
-    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>ChemVibe</a>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
     <nav class="nav" id="main-nav">
       <a href="index.html">Library</a>
       <a href="blog.html">Blog</a>
@@ -15,118 +17,59 @@
       <a href="about.html">About</a>
       <a href="notifications.html">Notifications</a>
       <a href="profile.html">Profile</a>
-      <a class="active" href="admin.html" id="nav-admin" hidden>Admin</a>
+      <a class="active" href="admin.html" id="nav-admin">Admin</a>
       <a class="nav-button" href="signin.html">Sign in</a>
     </nav>
   </header>
 
   <main class="container">
-    <section class="page-hero compact">
+    <section class="page-hero">
       <span class="eyebrow">ADMIN CONTROL</span>
       <h1>Admin Workspace</h1>
       <p>Manage study documents, blog articles, and live classes.</p>
     </section>
 
-    <!-- Shown if a non-admin or signed-out user opens admin.html -->
-    <section class="panel form-panel" id="admin-denied">
-      <h2>Checking permissions…</h2>
-      <p class="muted" id="admin-denied-msg">Verifying administrator access. If you are an admin, please sign in with your admin email.</p>
-      <div class="button-row" style="margin-top: 15px;">
-        <a class="button primary" href="signin.html">Sign in as Admin</a>
+    <!-- Permission Checking Box -->
+    <div class="panel" id="admin-auth-panel" style="text-align: center; padding: 40px;">
+      <h2 id="admin-status-title">Checking permissions...</h2>
+      <p class="muted" id="admin-status-desc">Verifying administrator access. If you are an admin, please sign in with your admin email.</p>
+      <div class="button-row" style="justify-content: center; margin-top: 20px;">
+        <a class="button primary" href="signin.html" id="admin-signin-btn">Sign in as Admin</a>
         <a class="button secondary" href="index.html">Back to Library</a>
       </div>
-    </section>
+    </div>
 
-    <!-- Admin Content Container (Hidden until verified) -->
-    <div id="admin-content" hidden>
-      <!-- 1. Add Study Document -->
+    <!-- Actual Admin Posting Forms (Hidden until verified) -->
+    <div id="admin-workspace-content" hidden>
       <section class="panel form-panel">
-        <h2>1. Add a Study Document</h2>
-        <p class="muted">Paste a link to your study material (Google Drive, OneDrive, or direct PDF link) to publish it to the Library.</p>
-        <form id="upload-form" style="margin-top: 16px;">
-          <label class="field-label" style="color: var(--ink);">Resource Title
-            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-title" type="text" required placeholder="e.g., Chemical Bonding Notes">
+        <h2>Add New Study Resource / Note</h2>
+        <p class="muted">Publish notes, past papers, or guides to the student library.</p>
+        
+        <form id="admin-add-form" style="margin-top: 20px;">
+          <label class="field-label">Resource Title
+            <input class="field" id="admin-title" type="text" required placeholder="e.g., Organic Chemistry Chapter 1 Notes">
           </label>
-          <label class="field-label" style="color: var(--ink);">Category
-            <select class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-type">
+
+          <label class="field-label">Category
+            <select class="field" id="admin-category">
               <option value="Notes">Notes</option>
               <option value="Practice">Practice</option>
               <option value="Past paper">Past paper</option>
-              <option value="Guide">Study guide</option>
+              <option value="Guide">Guide</option>
             </select>
           </label>
-          <label class="field-label" style="color: var(--ink);">Price (or Free)
-            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-price" type="text" required placeholder="e.g., Free or UGX 5,000">
+
+          <label class="field-label">Description
+            <textarea class="field" id="admin-desc" rows="4" required placeholder="Brief description of the resource..." style="height: auto; padding: 12px 16px;"></textarea>
           </label>
-          <label class="field-label" style="color: var(--ink);">Short Description
-            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-desc" type="text" required placeholder="Brief summary of what is inside">
-          </label>
-          <label class="field-label" style="color: var(--ink);">Document Link (URL)
-            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-url" type="url" required placeholder="https://drive.google.com/...">
-          </label>
-          <button class="button primary" id="upload-submit" type="submit">Publish Document</button>
-          <p class="status" id="upload-status" style="color: #087e9f; margin-top: 10px;"></p>
+
+          <button class="button primary" type="submit" style="margin-top: 10px;">Publish Resource</button>
         </form>
-      </section>
-
-      <!-- 2. Publish Blog Article -->
-      <section class="panel form-panel">
-        <h2>2. Publish a Blog Article</h2>
-        <p class="muted">Write a chemistry concept explainer to appear on the Blog page.</p>
-        <form id="blog-form" style="margin-top: 16px;">
-          <label class="field-label" style="color: var(--ink);">Article Title
-            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="blog-title" type="text" required placeholder="e.g., Understanding Hybridization">
-          </label>
-          <label class="field-label" style="color: var(--ink);">Topic Tag
-            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="blog-tag" type="text" required placeholder="e.g., ORGANIC, INORGANIC, PHYSICAL">
-          </label>
-          <label class="field-label" style="color: var(--ink);">Article Content / Summary
-            <textarea class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line); min-height: 110px; padding: 12px;" id="blog-body" required placeholder="Write your chemistry explanation here..."></textarea>
-          </label>
-          <button class="button primary" id="blog-submit" type="submit">Publish Article</button>
-          <p class="status" id="blog-status" style="color: #087e9f; margin-top: 10px;"></p>
-        </form>
-      </section>
-
-      <!-- 3. Schedule a Live Class -->
-      <section class="panel form-panel">
-        <h2>3. Schedule a Live Class</h2>
-        <p class="muted">Post a Google Meet or Zoom link for an upcoming live chemistry session.</p>
-        <form id="class-form" style="margin-top: 16px;">
-          <label class="field-label" style="color: var(--ink);">Class Topic
-            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="class-title" type="text" required placeholder="e.g., Stoichiometry Problem Solving">
-          </label>
-          <label class="field-label" style="color: var(--ink);">Date &amp; Time
-            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="class-time" type="text" required placeholder="e.g., Saturday, Nov 28 at 4:00 PM EAT">
-          </label>
-          <label class="field-label" style="color: var(--ink);">Class Description
-            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="class-desc" type="text" required placeholder="What students should prepare or expect">
-          </label>
-          <label class="field-label" style="color: var(--ink);">Meeting Link (Google Meet / Zoom URL)
-            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="class-url" type="url" required placeholder="https://meet.google.com/...">
-          </label>
-          <button class="button primary" id="class-submit" type="submit">Post Live Class</button>
-          <p class="status" id="class-status" style="color: #087e9f; margin-top: 10px;"></p>
-        </form>
-      </section>
-
-      <!-- 4. Manage Existing Content -->
-      <section class="panel form-panel">
-        <h2>Manage Published Content</h2>
-        <p class="muted">Delete any document, blog post, or live class from your site.</p>
-        
-        <h3 style="margin-top: 20px;">Library Documents</h3>
-        <div id="admin-resource-list" style="margin-top: 10px; display: grid; gap: 10px;"></div>
-
-        <h3 style="margin-top: 24px;">Blog Articles</h3>
-        <div id="admin-blog-list" style="margin-top: 10px; display: grid; gap: 10px;"></div>
-
-        <h3 style="margin-top: 24px;">Live Classes</h3>
-        <div id="admin-class-list" style="margin-top: 10px; display: grid; gap: 10px;"></div>
       </section>
     </div>
   </main>
-  <footer class="footer">ChemVibe Admin Workspace — Restricted Access.</footer>
-  <script type="module" src="app.js"></script>
+
+  <footer class="footer">ChemVibe Admin Workspace</footer>
+  <script type="module" src="admin.js"></script>
 </body>
 </html>
