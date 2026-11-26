@@ -23,7 +23,7 @@
     <section class="page-hero compact">
       <span class="eyebrow">ADMIN CONTROL</span>
       <h1>Admin Workspace</h1>
-      <p>Manage study documents and platform resources.</p>
+      <p>Manage study documents, blog articles, and live classes.</p>
     </section>
 
     <!-- Shown if a non-admin or signed-out user opens admin.html -->
@@ -36,42 +36,94 @@
       </div>
     </section>
 
-    <!-- Shown ONLY to the Admin -->
-    <section class="panel form-panel" id="admin-workspace" hidden>
-      <h2>Add a Study Document</h2>
-      <p class="muted">Paste a link to your study material (Google Drive, OneDrive, or direct PDF link) to publish it to the Chemistry Library.</p>
-      <form id="upload-form" style="margin-top: 16px;">
-        <label class="field-label" style="color: var(--ink);">Resource Title
-          <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-title" type="text" required placeholder="e.g., Chemical Bonding Notes">
-        </label>
-        <label class="field-label" style="color: var(--ink);">Category
-          <select class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-type">
-            <option value="Notes">Notes</option>
-            <option value="Practice">Practice</option>
-            <option value="Past paper">Past paper</option>
-            <option value="Guide">Study guide</option>
-          </select>
-        </label>
-        <label class="field-label" style="color: var(--ink);">Price (or Free)
-          <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-price" type="text" required placeholder="e.g., Free or UGX 5,000">
-        </label>
-        <label class="field-label" style="color: var(--ink);">Short Description
-          <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-desc" type="text" required placeholder="Brief summary of what is inside">
-        </label>
-        <label class="field-label" style="color: var(--ink);">Document Link (URL)
-          <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-url" type="url" required placeholder="https://drive.google.com/...">
-        </label>
-        <button class="button primary" id="upload-submit" type="submit">Publish to Library</button>
-        <p class="status" id="upload-status" style="color: #087e9f; margin-top: 10px;"></p>
-      </form>
-    </section>
+    <!-- Admin Content Container (Hidden until verified) -->
+    <div id="admin-content" hidden>
+      <!-- 1. Add Study Document -->
+      <section class="panel form-panel">
+        <h2>1. Add a Study Document</h2>
+        <p class="muted">Paste a link to your study material (Google Drive, OneDrive, or direct PDF link) to publish it to the Library.</p>
+        <form id="upload-form" style="margin-top: 16px;">
+          <label class="field-label" style="color: var(--ink);">Resource Title
+            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-title" type="text" required placeholder="e.g., Chemical Bonding Notes">
+          </label>
+          <label class="field-label" style="color: var(--ink);">Category
+            <select class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-type">
+              <option value="Notes">Notes</option>
+              <option value="Practice">Practice</option>
+              <option value="Past paper">Past paper</option>
+              <option value="Guide">Study guide</option>
+            </select>
+          </label>
+          <label class="field-label" style="color: var(--ink);">Price (or Free)
+            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-price" type="text" required placeholder="e.g., Free or UGX 5,000">
+          </label>
+          <label class="field-label" style="color: var(--ink);">Short Description
+            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-desc" type="text" required placeholder="Brief summary of what is inside">
+          </label>
+          <label class="field-label" style="color: var(--ink);">Document Link (URL)
+            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="res-url" type="url" required placeholder="https://drive.google.com/...">
+          </label>
+          <button class="button primary" id="upload-submit" type="submit">Publish Document</button>
+          <p class="status" id="upload-status" style="color: #087e9f; margin-top: 10px;"></p>
+        </form>
+      </section>
 
-    <!-- Manage Existing Resources (Delete unwanted items) -->
-    <section class="panel form-panel" id="admin-manage" hidden>
-      <h2>Manage Uploaded Documents</h2>
-      <p class="muted">Remove any resource from the library.</p>
-      <div id="admin-resource-list" style="margin-top: 16px; display: grid; gap: 12px;"></div>
-    </section>
+      <!-- 2. Publish Blog Article -->
+      <section class="panel form-panel">
+        <h2>2. Publish a Blog Article</h2>
+        <p class="muted">Write a chemistry concept explainer to appear on the Blog page.</p>
+        <form id="blog-form" style="margin-top: 16px;">
+          <label class="field-label" style="color: var(--ink);">Article Title
+            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="blog-title" type="text" required placeholder="e.g., Understanding Hybridization">
+          </label>
+          <label class="field-label" style="color: var(--ink);">Topic Tag
+            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="blog-tag" type="text" required placeholder="e.g., ORGANIC, INORGANIC, PHYSICAL">
+          </label>
+          <label class="field-label" style="color: var(--ink);">Article Content / Summary
+            <textarea class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line); min-height: 110px; padding: 12px;" id="blog-body" required placeholder="Write your chemistry explanation here..."></textarea>
+          </label>
+          <button class="button primary" id="blog-submit" type="submit">Publish Article</button>
+          <p class="status" id="blog-status" style="color: #087e9f; margin-top: 10px;"></p>
+        </form>
+      </section>
+
+      <!-- 3. Schedule a Live Class -->
+      <section class="panel form-panel">
+        <h2>3. Schedule a Live Class</h2>
+        <p class="muted">Post a Google Meet or Zoom link for an upcoming live chemistry session.</p>
+        <form id="class-form" style="margin-top: 16px;">
+          <label class="field-label" style="color: var(--ink);">Class Topic
+            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="class-title" type="text" required placeholder="e.g., Stoichiometry Problem Solving">
+          </label>
+          <label class="field-label" style="color: var(--ink);">Date &amp; Time
+            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="class-time" type="text" required placeholder="e.g., Saturday, Nov 28 at 4:00 PM EAT">
+          </label>
+          <label class="field-label" style="color: var(--ink);">Class Description
+            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="class-desc" type="text" required placeholder="What students should prepare or expect">
+          </label>
+          <label class="field-label" style="color: var(--ink);">Meeting Link (Google Meet / Zoom URL)
+            <input class="field" style="background: #fbfcff; color: var(--ink); border-color: var(--line);" id="class-url" type="url" required placeholder="https://meet.google.com/...">
+          </label>
+          <button class="button primary" id="class-submit" type="submit">Post Live Class</button>
+          <p class="status" id="class-status" style="color: #087e9f; margin-top: 10px;"></p>
+        </form>
+      </section>
+
+      <!-- 4. Manage Existing Content -->
+      <section class="panel form-panel">
+        <h2>Manage Published Content</h2>
+        <p class="muted">Delete any document, blog post, or live class from your site.</p>
+        
+        <h3 style="margin-top: 20px;">Library Documents</h3>
+        <div id="admin-resource-list" style="margin-top: 10px; display: grid; gap: 10px;"></div>
+
+        <h3 style="margin-top: 24px;">Blog Articles</h3>
+        <div id="admin-blog-list" style="margin-top: 10px; display: grid; gap: 10px;"></div>
+
+        <h3 style="margin-top: 24px;">Live Classes</h3>
+        <div id="admin-class-list" style="margin-top: 10px; display: grid; gap: 10px;"></div>
+      </section>
+    </div>
   </main>
   <footer class="footer">ChemVibe Admin Workspace — Restricted Access.</footer>
   <script type="module" src="app.js"></script>
