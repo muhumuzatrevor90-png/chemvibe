@@ -1,13 +1,15 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Live classes — ChemVibe</title><link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live classes — ChemVibe</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>ChemVibe</a>
-    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"></span>ChemVibe</a>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
     <nav class="nav" id="main-nav">
       <a href="index.html">Library</a>
       <a href="blog.html">Blog</a>
@@ -20,35 +22,11 @@
     </nav>
   </header>
 
-  <div class="chem-marquee" aria-hidden="true">
-    <div class="chem-marquee-track">
-      <span class="chem-pill"><b>LIVE LAB</b> Interactive Problem Solving</span>
-      <span class="chem-pill"><b>Q&amp;A</b> Direct University Chemistry Guidance</span>
-      <span class="chem-pill"><b>EXAM PREP</b> Past Paper Walkthroughs</span>
-      <span class="chem-pill"><b>LIVE LAB</b> Interactive Problem Solving</span>
-      <span class="chem-pill"><b>Q&amp;A</b> Direct University Chemistry Guidance</span>
-      <span class="chem-pill"><b>EXAM PREP</b> Past Paper Walkthroughs</span>
-    </div>
-  </div>
-
   <main class="container">
     <section class="page-hero compact">
-      <div class="hero-visual-wrap">
-        <div style="flex: 1; min-width: 260px;">
-          <span class="eyebrow">LEARN TOGETHER</span>
-          <h1>Live chemistry classes</h1>
-          <p>Upcoming sessions and host-provided meeting links appear here.</p>
-        </div>
-        <div class="hero-art" aria-hidden="true">
-          <!-- Atomic Orbitals Illustration -->
-          <svg width="110" height="110" viewBox="0 0 100 100" fill="none" stroke="#38bdf8" stroke-width="2">
-            <circle cx="50" cy="50" r="8" fill="#38bdf8"/>
-            <ellipse cx="50" cy="50" rx="40" ry="15" transform="rotate(30 50 50)"/>
-            <ellipse cx="50" cy="50" rx="40" ry="15" transform="rotate(-30 50 50)"/>
-            <ellipse cx="50" cy="50" rx="40" ry="15" transform="rotate(90 50 50)"/>
-          </svg>
-        </div>
-      </div>
+      <span class="eyebrow">LEARN TOGETHER</span>
+      <h1>Live chemistry classes</h1>
+      <p>Upcoming sessions and host-provided meeting links appear here.</p>
     </section>
 
     <section class="section">
@@ -56,6 +34,7 @@
       <div class="empty-state" id="classes-empty">No classes are scheduled right now. Check back soon!</div>
     </section>
   </main>
+
   <footer class="footer">Only join sessions from hosts you recognize.</footer>
   <script type="module" src="app.js"></script>
 </body>
