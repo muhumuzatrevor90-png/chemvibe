@@ -1,6 +1,5 @@
 import { 
   auth, db, configured, 
-  collection, getDocs, addDoc, deleteDoc, doc, 
   signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged 
 } from "./firebase.js";
 
