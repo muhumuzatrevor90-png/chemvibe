@@ -1,5 +1,5 @@
 import { auth, db, configured, onAuthStateChanged } from "./firebase.js";
-import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const byId = (id) => document.getElementById(id);
 const ADMIN_EMAIL = "muhumuzatrevormbabazi@gmail.com";
@@ -25,11 +25,96 @@ if (configured && auth) {
     if (user && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
       if (authPanel) authPanel.hidden = true;
       if (workspaceContent) workspaceContent.hidden = false;
+      loadAdminContent(); // Load posts for deletion management
     } else {
       if (statusTitle) statusTitle.textContent = "Access Denied";
       if (statusDesc) statusDesc.textContent = "This account does not have administrator privileges.";
       if (signinBtn) signinBtn.href = "signin.html";
     }
+  });
+}
+
+// --- Load Content for Management/Deletion ---
+async function loadAdminContent() {
+  if (!db) return;
+
+  // 1. Resources
+  const resContainer = byId("admin-resource-list");
+  if (resContainer) {
+    const resSnap = await getDocs(collection(db, "resources"));
+    resContainer.innerHTML = resSnap.empty ? "<p class='muted'>No resources found.</p>" : "";
+    resSnap.forEach((document) => {
+      const data = document.data();
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.marginBottom = "10px";
+      div.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div><strong>${data.title}</strong> <span class="muted">(${data.category})</span></div>
+          <button class="button secondary delete-btn" data-coll="resources" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+        </div>
+      `;
+      resContainer.appendChild(div);
+    });
+  }
+
+  // 2. Blogs
+  const blogContainer = byId("admin-blog-list");
+  if (blogContainer) {
+    const blogSnap = await getDocs(collection(db, "blogs"));
+    blogContainer.innerHTML = blogSnap.empty ? "<p class='muted'>No blog posts found.</p>" : "";
+    blogSnap.forEach((document) => {
+      const data = document.data();
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.marginBottom = "10px";
+      div.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div><strong>${data.title}</strong> <span class="muted">(${data.date})</span></div>
+          <button class="button secondary delete-btn" data-coll="blogs" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+        </div>
+      `;
+      blogContainer.appendChild(div);
+    });
+  }
+
+  // 3. Classes
+  const classContainer = byId("admin-class-list");
+  if (classContainer) {
+    const classSnap = await getDocs(collection(db, "classes"));
+    classContainer.innerHTML = classSnap.empty ? "<p class='muted'>No live classes found.</p>" : "";
+    classSnap.forEach((document) => {
+      const data = document.data();
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.marginBottom = "10px";
+      div.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div><strong>${data.title}</strong> <span class="muted">(${data.time})</span></div>
+          <button class="button secondary delete-btn" data-coll="classes" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+        </div>
+      `;
+      classContainer.appendChild(div);
+    });
+  }
+
+  // Attach delete handlers
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const collectionName = e.target.dataset.coll;
+      const docId = e.target.dataset.id;
+
+      if (confirm("Are you sure you want to delete this post?")) {
+        try {
+          await deleteDoc(doc(db, collectionName, docId));
+          alert("Post deleted successfully!");
+          loadAdminContent(); // Refresh the list
+        } catch (err) {
+          console.error("Error deleting document:", err);
+          alert("Failed to delete post.");
+        }
+      }
+    });
   });
 }
 
@@ -47,18 +132,13 @@ if (adminForm) {
 
     try {
       await addDoc(collection(db, "resources"), {
-        title,
-        category,
-        price: "Free",
-        description,
-        link,
-        createdAt: Date.now()
+        title, category, price: "Free", description, link, createdAt: Date.now()
       });
       adminForm.reset();
-      alert("Study resource published successfully to cloud storage!");
+      alert("Study resource published successfully!");
+      loadAdminContent();
     } catch (error) {
       console.error("Error adding resource:", error);
-      alert(`Failed to publish: ${error.message}`);
     }
   });
 }
@@ -77,17 +157,13 @@ if (blogForm) {
 
     try {
       await addDoc(collection(db, "blogs"), {
-        title,
-        date,
-        link: link || "#",
-        summary,
-        createdAt: Date.now()
+        title, date, link: link || "#", summary, createdAt: Date.now()
       });
       blogForm.reset();
-      alert("Blog article published successfully to cloud storage!");
+      alert("Blog article published successfully!");
+      loadAdminContent();
     } catch (error) {
       console.error("Error adding blog post:", error);
-      alert(`Failed to publish: ${error.message}`);
     }
   });
 }
@@ -106,17 +182,13 @@ if (classForm) {
 
     try {
       await addDoc(collection(db, "classes"), {
-        title,
-        host,
-        time,
-        link,
-        createdAt: Date.now()
+        title, host, time, link, createdAt: Date.now()
       });
       classForm.reset();
-      alert("Live class scheduled successfully to cloud storage!");
+      alert("Live class scheduled successfully!");
+      loadAdminContent();
     } catch (error) {
       console.error("Error scheduling class:", error);
-      alert(`Failed to schedule: ${error.message}`);
     }
   });
 }
