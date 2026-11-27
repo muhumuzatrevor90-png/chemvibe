@@ -13,6 +13,22 @@ if (menuToggle && mainNav) {
   });
 }
 
+// --- Dark Mode Initialization & Toggle ---
+const themeToggleBtn = byId("theme-toggle");
+if (localStorage.getItem("chemvibe_theme") === "dark") {
+  document.body.classList.add("dark-mode");
+  if (themeToggleBtn) themeToggleBtn.textContent = "☀️";
+}
+
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    const isDark = document.body.classList.contains("dark-mode");
+    localStorage.setItem("chemvibe_theme", isDark ? "dark" : "light");
+    themeToggleBtn.textContent = isDark ? "☀️" : "🌙";
+  });
+}
+
 // --- Admin Permission Check ---
 if (configured && auth) {
   onAuthStateChanged(auth, (user) => {
