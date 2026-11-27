@@ -3,46 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chemistry Blog — ChemVibe</title>
+  <title>Blog — ChemVibe</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"></span>ChemVibe</a>
+    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>ChemVibe</a>
     <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
     <nav class="nav" id="main-nav">
       <a href="index.html">Library</a>
       <a class="active" href="blog.html">Blog</a>
       <a href="classes.html">Live classes</a>
       <a href="about.html">About</a>
-      <a href="notifications.html">Notifications</a>
+      <a href="notifications.html">Notifications <span id="notification-badge" class="badge" hidden>0</span></a>
       <a href="profile.html">Profile</a>
       <a href="admin.html" id="nav-admin" hidden>Admin</a>
+      <button id="theme-toggle" class="button secondary" style="padding: 6px 10px; cursor: pointer; background: transparent; border: 1px solid currentColor;" aria-label="Toggle dark mode">🌙</button>
       <a class="nav-button" href="signin.html">Sign in</a>
     </nav>
   </header>
 
   <main class="container">
     <section class="page-hero">
-      <span class="eyebrow">CHEMVIBE BLOG</span>
-      <h1>Chemistry concepts, <span>made clearer.</span></h1>
-      <p>Starter explainers for common chemistry topics. Articles published by Dr. Ruth Mbabazi and the ChemVibe team appear here.</p>
+      <span class="eyebrow">ARTICLES & TIPS</span>
+      <h1>Chemistry Blog</h1>
+      <p>Read conceptual breakdowns, study tips, and updates from your instructor.</p>
     </section>
 
-    <section class="search-panel">
-      <label class="search-box">
-        <span aria-hidden="true">⌕</span>
-        <input id="blog-search" type="search" placeholder="Search concepts">
-      </label>
-    </section>
-
-    <section class="section">
-      <div class="card-grid" id="blog-list"></div>
-      <div class="empty-state" id="blog-empty">No articles published yet.</div>
+    <section class="panel">
+      <div id="blog-list"></div>
+      <div id="blog-empty" hidden style="text-align: center; padding: 20px;">
+        <p class="muted">No blog articles published yet.</p>
+      </div>
     </section>
   </main>
 
-  <footer class="footer">Educational summaries are a starting point; follow your course materials for full detail.</footer>
+  <footer class="footer">ChemVibe Blog</footer>
   <script type="module" src="app.js"></script>
 </body>
 </html>
