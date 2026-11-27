@@ -14,11 +14,10 @@
       <a href="index.html">Library</a>
       <a href="blog.html">Blog</a>
       <a href="classes.html">Live classes</a>
-      <a href="about.html">About</a>
+      <a href="about-us.html">About Us</a>
       <a href="notifications.html">Notifications <span id="notification-badge" class="badge" hidden>0</span></a>
       <a href="profile.html">Profile</a>
       <a class="active" href="admin.html" id="nav-admin">Admin</a>
-      <button id="theme-toggle" class="button secondary" style="padding: 6px 10px; cursor: pointer; background: transparent; border: 1px solid currentColor;" aria-label="Toggle dark mode">🌙</button>
       <a class="nav-button" href="signin.html">Sign in</a>
     </nav>
   </header>
@@ -30,7 +29,6 @@
       <p>Manage study documents, blog articles, live classes, and notifications.</p>
     </section>
 
-    <!-- Permission Checking Box -->
     <div class="panel" id="admin-auth-panel" style="text-align: center; padding: 40px;">
       <h2 id="admin-status-title">Checking permissions...</h2>
       <p class="muted" id="admin-status-desc">Verifying administrator access. Please sign in with your admin email.</p>
@@ -40,19 +38,14 @@
       </div>
     </div>
 
-    <!-- Actual Admin Posting & Management Workspaces (Hidden until verified) -->
     <div id="admin-workspace-content" hidden>
-      
-      <!-- 1. Post Study Resource / Note -->
-      <section class="panel form-panel" style="margin-bottom: 24px;">
+      <section class="panel form-panel">
         <h2>Add New Study Resource / Note</h2>
         <p class="muted">Publish notes, past papers, or guides to the student library.</p>
-        
         <form id="admin-add-form" style="margin-top: 20px;">
           <label class="field-label">Resource Title
             <input class="field" id="admin-title" type="text" required placeholder="e.g., Organic Chemistry Chapter 1 Notes">
           </label>
-
           <label class="field-label">Category
             <select class="field" id="admin-category">
               <option value="Notes">Notes</option>
@@ -61,102 +54,79 @@
               <option value="Guide">Guide</option>
             </select>
           </label>
-
           <label class="field-label">Price (e.g., Free, $5.00, UGX 5000)
             <input class="field" id="admin-price" type="text" required value="Free" placeholder="Free">
           </label>
-
           <label class="field-label">Google Drive Link (URL)
             <input class="field" id="admin-link" type="url" required placeholder="https://drive.google.com/file/d/...">
           </label>
-
           <label class="field-label">Description
-            <textarea class="field" id="admin-desc" rows="4" required placeholder="Brief description of the resource..." style="height: auto; padding: 12px 16px;"></textarea>
+            <textarea class="field" id="admin-desc" rows="4" required placeholder="Brief description of the resource..."></textarea>
           </label>
-
           <button class="button primary" type="submit" style="margin-top: 10px;">Publish Resource</button>
         </form>
       </section>
 
-      <!-- 2. Post Blog Article -->
-      <section class="panel form-panel" style="margin-bottom: 24px;">
+      <section class="panel form-panel">
         <h2>Publish Blog Article</h2>
         <p class="muted">Share chemistry tips, conceptual breakdowns, or updates on the blog.</p>
-        
         <form id="admin-blog-form" style="margin-top: 20px;">
           <label class="field-label">Article Title
             <input class="field" id="blog-title" type="text" required placeholder="e.g., Understanding Enthalpy and Entropy">
           </label>
-
           <label class="field-label">Publication Date
             <input class="field" id="blog-date" type="text" required placeholder="e.g., Nov 28, 2026">
           </label>
-
           <label class="field-label">Google Drive Link (Optional Reading/Document)
             <input class="field" id="blog-link" type="url" placeholder="https://drive.google.com/file/d/...">
           </label>
-
           <label class="field-label">Summary / Content
-            <textarea class="field" id="blog-summary" rows="4" required placeholder="A clear summary of the blog article..." style="height: auto; padding: 12px 16px;"></textarea>
+            <textarea class="field" id="blog-summary" rows="4" required placeholder="A clear summary of the blog article..."></textarea>
           </label>
-
           <button class="button primary" type="submit" style="margin-top: 10px;">Publish Blog Post</button>
         </form>
       </section>
 
-      <!-- 3. Schedule Live Class -->
-      <section class="panel form-panel" style="margin-bottom: 24px;">
+      <section class="panel form-panel">
         <h2>Schedule Live Class Session</h2>
         <p class="muted">Set up interactive tutoring or Q&A sessions for students.</p>
-        
         <form id="admin-class-form" style="margin-top: 20px;">
           <label class="field-label">Session Title
             <input class="field" id="class-title" type="text" required placeholder="e.g., Q&A Session: Organic Synthesis Pathways">
           </label>
-
           <label class="field-label">Host Name
             <input class="field" id="class-host" type="text" required placeholder="e.g., Dr. Ruth Mbabazi">
           </label>
-
           <label class="field-label">Time & Schedule
             <input class="field" id="class-time" type="text" required placeholder="e.g., Tomorrow, 4:00 PM EAT">
           </label>
-
           <label class="field-label">Meeting / Session Link
             <input class="field" id="class-link" type="url" required placeholder="https://meet.google.com/...">
           </label>
-
           <button class="button primary" type="submit" style="margin-top: 10px;">Schedule Live Class</button>
         </form>
       </section>
 
-      <!-- 4. Broadcast Student Notification -->
-      <section class="panel form-panel" style="margin-bottom: 24px;">
+      <section class="panel form-panel">
         <h2>Broadcast Student Notification</h2>
         <p class="muted">Send real-time alerts or announcements to the notifications page.</p>
-        
         <form id="admin-notif-form" style="margin-top: 20px;">
           <label class="field-label">Notification Title
             <input class="field" id="notif-title" type="text" required placeholder="e.g., Exam Schedule Updated">
           </label>
-
           <label class="field-label">Date / Tag
             <input class="field" id="notif-date" type="text" required placeholder="e.g., Today, 2:00 PM">
           </label>
-
           <label class="field-label">Message Content
-            <textarea class="field" id="notif-message" rows="3" required placeholder="Type your announcement here..." style="height: auto; padding: 12px 16px;"></textarea>
+            <textarea class="field" id="notif-message" rows="3" required placeholder="Type your announcement here..."></textarea>
           </label>
-
           <button class="button primary" type="submit" style="margin-top: 10px;">Broadcast Notification</button>
         </form>
       </section>
 
-      <!-- 5. Manage / Delete Existing Posts -->
       <section class="panel form-panel">
         <h2>Manage Published Content</h2>
         <p class="muted">View and delete existing resources, blog articles, live classes, or notifications.</p>
-        
         <div style="margin-top: 20px;">
           <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Resources</h3>
           <div id="admin-resource-list" style="margin-bottom: 24px;"></div>
@@ -171,7 +141,6 @@
           <div id="admin-notif-list"></div>
         </div>
       </section>
-
     </div>
   </main>
 
