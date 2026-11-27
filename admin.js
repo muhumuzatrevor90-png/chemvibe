@@ -36,106 +36,114 @@ if (configured && auth) {
 
 // --- Load Content for Management & Deletion ---
 async function loadAdminContent() {
-  if (!db) return;
-
-  // 1. Resources
-  const resContainer = byId("admin-resource-list");
-  if (resContainer) {
-    const resSnap = await getDocs(collection(db, "resources"));
-    resContainer.innerHTML = resSnap.empty ? "<p class='muted'>No resources found.</p>" : "";
-    resSnap.forEach((document) => {
-      const data = document.data();
-      const div = document.createElement("div");
-      div.className = "card";
-      div.style.marginBottom = "10px";
-      div.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div><strong>${data.title}</strong> <span class="muted">(${data.category} — ${data.price || "Free"})</span></div>
-          <button class="button secondary delete-btn" data-coll="resources" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
-        </div>
-      `;
-      resContainer.appendChild(div);
-    });
+  if (!db) {
+    console.error("Firestore DB is not initialized.");
+    return;
   }
 
-  // 2. Blogs
-  const blogContainer = byId("admin-blog-list");
-  if (blogContainer) {
-    const blogSnap = await getDocs(collection(db, "blogs"));
-    blogContainer.innerHTML = blogSnap.empty ? "<p class='muted'>No blog posts found.</p>" : "";
-    blogSnap.forEach((document) => {
-      const data = document.data();
-      const div = document.createElement("div");
-      div.className = "card";
-      div.style.marginBottom = "10px";
-      div.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div><strong>${data.title}</strong> <span class="muted">(${data.date})</span></div>
-          <button class="button secondary delete-btn" data-coll="blogs" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
-        </div>
-      `;
-      blogContainer.appendChild(div);
-    });
-  }
+  try {
+    // 1. Resources
+    const resContainer = byId("admin-resource-list");
+    if (resContainer) {
+      const resSnap = await getDocs(collection(db, "resources"));
+      resContainer.innerHTML = resSnap.empty ? "<p class='muted'>No resources found.</p>" : "";
+      resSnap.forEach((document) => {
+        const data = document.data();
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.marginBottom = "10px";
+        div.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.category || "Notes"} — ${data.price || "Free"})</span></div>
+            <button class="button secondary delete-btn" data-coll="resources" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+          </div>
+        `;
+        resContainer.appendChild(div);
+      });
+    }
 
-  // 3. Classes
-  const classContainer = byId("admin-class-list");
-  if (classContainer) {
-    const classSnap = await getDocs(collection(db, "classes"));
-    classContainer.innerHTML = classSnap.empty ? "<p class='muted'>No live classes found.</p>" : "";
-    classSnap.forEach((document) => {
-      const data = document.data();
-      const div = document.createElement("div");
-      div.className = "card";
-      div.style.marginBottom = "10px";
-      div.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div><strong>${data.title}</strong> <span class="muted">(${data.time})</span></div>
-          <button class="button secondary delete-btn" data-coll="classes" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
-        </div>
-      `;
-      classContainer.appendChild(div);
-    });
-  }
+    // 2. Blogs
+    const blogContainer = byId("admin-blog-list");
+    if (blogContainer) {
+      const blogSnap = await getDocs(collection(db, "blogs"));
+      blogContainer.innerHTML = blogSnap.empty ? "<p class='muted'>No blog posts found.</p>" : "";
+      blogSnap.forEach((document) => {
+        const data = document.data();
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.marginBottom = "10px";
+        div.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.date || ""})</span></div>
+            <button class="button secondary delete-btn" data-coll="blogs" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+          </div>
+        `;
+        blogContainer.appendChild(div);
+      });
+    }
 
-  // 4. Notifications
-  const notifContainer = byId("admin-notif-list");
-  if (notifContainer) {
-    const notifSnap = await getDocs(collection(db, "notifications"));
-    notifContainer.innerHTML = notifSnap.empty ? "<p class='muted'>No notifications found.</p>" : "";
-    notifSnap.forEach((document) => {
-      const data = document.data();
-      const div = document.createElement("div");
-      div.className = "card";
-      div.style.marginBottom = "10px";
-      div.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div><strong>${data.title}</strong> <span class="muted">(${data.date})</span></div>
-          <button class="button secondary delete-btn" data-coll="notifications" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
-        </div>
-      `;
-      notifContainer.appendChild(div);
-    });
-  }
+    // 3. Classes
+    const classContainer = byId("admin-class-list");
+    if (classContainer) {
+      const classSnap = await getDocs(collection(db, "classes"));
+      classContainer.innerHTML = classSnap.empty ? "<p class='muted'>No live classes found.</p>" : "";
+      classSnap.forEach((document) => {
+        const data = document.data();
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.marginBottom = "10px";
+        div.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.time || ""})</span></div>
+            <button class="button secondary delete-btn" data-coll="classes" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+          </div>
+        `;
+        classContainer.appendChild(div);
+      });
+    }
 
-  // Attach delete handlers
-  document.querySelectorAll(".delete-btn").forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-      const collectionName = e.target.dataset.coll;
-      const docId = e.target.dataset.id;
+    // 4. Notifications
+    const notifContainer = byId("admin-notif-list");
+    if (notifContainer) {
+      const notifSnap = await getDocs(collection(db, "notifications"));
+      notifContainer.innerHTML = notifSnap.empty ? "<p class='muted'>No notifications found.</p>" : "";
+      notifSnap.forEach((document) => {
+        const data = document.data();
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.marginBottom = "10px";
+        div.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.date || ""})</span></div>
+            <button class="button secondary delete-btn" data-coll="notifications" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+          </div>
+        `;
+        notifContainer.appendChild(div);
+      });
+    }
 
-      if (confirm("Are you sure you want to delete this post?")) {
-        try {
-          await deleteDoc(doc(db, collectionName, docId));
-          alert("Post deleted successfully!");
-          loadAdminContent();
-        } catch (err) {
-          console.error("Error deleting document:", err);
-          alert("Failed to delete post.");
+    // Attach delete handlers to all delete buttons
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        const collectionName = e.target.dataset.coll;
+        const docId = e.target.dataset.id;
+
+        if (confirm("Are you sure you want to delete this post?")) {
+          try {
+            await deleteDoc(doc(db, collectionName, docId));
+            alert("Post deleted successfully!");
+            loadAdminContent();
+          } catch (err) {
+            console.error("Error deleting document:", err);
+            alert("Failed to delete post. Check console for details.");
+          }
         }
-      }
+      });
     });
-  });
+
+  } catch (error) {
+    console.error("Error loading admin content from Firestore:", error);
+  }
 }
 
 // --- Publish Resource ---
@@ -161,6 +169,7 @@ if (adminForm) {
       loadAdminContent();
     } catch (error) {
       console.error("Error adding resource:", error);
+      alert("Failed to publish resource.");
     }
   });
 }
@@ -186,6 +195,7 @@ if (blogForm) {
       loadAdminContent();
     } catch (error) {
       console.error("Error adding blog post:", error);
+      alert("Failed to publish blog post.");
     }
   });
 }
@@ -211,6 +221,7 @@ if (classForm) {
       loadAdminContent();
     } catch (error) {
       console.error("Error scheduling class:", error);
+      alert("Failed to schedule class.");
     }
   });
 }
@@ -235,6 +246,7 @@ if (notifForm) {
       loadAdminContent();
     } catch (error) {
       console.error("Error sending notification:", error);
+      alert("Failed to broadcast notification.");
     }
   });
 }
