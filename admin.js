@@ -4,7 +4,6 @@ import { collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic
 const byId = (id) => document.getElementById(id);
 const ADMIN_EMAIL = "muhumuzatrevormbabazi@gmail.com";
 
-// --- Mobile Navigation Toggle ---
 const menuToggle = byId("menu-toggle");
 const mainNav = byId("main-nav");
 if (menuToggle && mainNav) {
@@ -13,23 +12,6 @@ if (menuToggle && mainNav) {
   });
 }
 
-// --- Dark Mode Initialization & Toggle ---
-const themeToggleBtn = byId("theme-toggle");
-if (localStorage.getItem("chemvibe_theme") === "dark") {
-  document.body.classList.add("dark-mode");
-  if (themeToggleBtn) themeToggleBtn.textContent = "☀️";
-}
-
-if (themeToggleBtn) {
-  themeToggleBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    const isDark = document.body.classList.contains("dark-mode");
-    localStorage.setItem("chemvibe_theme", isDark ? "dark" : "light");
-    themeToggleBtn.textContent = isDark ? "☀️" : "🌙";
-  });
-}
-
-// --- Admin Permission Check ---
 if (configured && auth) {
   onAuthStateChanged(auth, (user) => {
     const authPanel = byId("admin-auth-panel");
@@ -50,15 +32,10 @@ if (configured && auth) {
   });
 }
 
-// --- Load Content for Management & Deletion ---
 async function loadAdminContent() {
-  if (!db) {
-    console.error("Firestore DB is not initialized.");
-    return;
-  }
+  if (!db) return;
 
   try {
-    // 1. Resources
     const resContainer = byId("admin-resource-list");
     if (resContainer) {
       const resSnap = await getDocs(collection(db, "resources"));
@@ -71,14 +48,13 @@ async function loadAdminContent() {
         div.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.category || "Notes"} — ${data.price || "Free"})</span></div>
-            <button class="button secondary delete-btn" data-coll="resources" data-id="${docSnap.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+            <button class="button secondary delete-btn" data-coll="resources" data-id="${docSnap.id}" style="background: #ef4444; color: white; padding: 6px 12px;">Delete</button>
           </div>
         `;
         resContainer.appendChild(div);
       });
     }
 
-    // 2. Blogs
     const blogContainer = byId("admin-blog-list");
     if (blogContainer) {
       const blogSnap = await getDocs(collection(db, "blogs"));
@@ -91,14 +67,13 @@ async function loadAdminContent() {
         div.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.date || ""})</span></div>
-            <button class="button secondary delete-btn" data-coll="blogs" data-id="${docSnap.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+            <button class="button secondary delete-btn" data-coll="blogs" data-id="${docSnap.id}" style="background: #ef4444; color: white; padding: 6px 12px;">Delete</button>
           </div>
         `;
         blogContainer.appendChild(div);
       });
     }
 
-    // 3. Classes
     const classContainer = byId("admin-class-list");
     if (classContainer) {
       const classSnap = await getDocs(collection(db, "classes"));
@@ -111,14 +86,13 @@ async function loadAdminContent() {
         div.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.time || ""})</span></div>
-            <button class="button secondary delete-btn" data-coll="classes" data-id="${docSnap.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+            <button class="button secondary delete-btn" data-coll="classes" data-id="${docSnap.id}" style="background: #ef4444; color: white; padding: 6px 12px;">Delete</button>
           </div>
         `;
         classContainer.appendChild(div);
       });
     }
 
-    // 4. Notifications
     const notifContainer = byId("admin-notif-list");
     if (notifContainer) {
       const notifSnap = await getDocs(collection(db, "notifications"));
@@ -131,14 +105,13 @@ async function loadAdminContent() {
         div.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.date || ""})</span></div>
-            <button class="button secondary delete-btn" data-coll="notifications" data-id="${docSnap.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+            <button class="button secondary delete-btn" data-coll="notifications" data-id="${docSnap.id}" style="background: #ef4444; color: white; padding: 6px 12px;">Delete</button>
           </div>
         `;
         notifContainer.appendChild(div);
       });
     }
 
-    // Attach delete handlers to all delete buttons
     document.querySelectorAll(".delete-btn").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
         const collectionName = e.target.dataset.coll;
@@ -151,7 +124,7 @@ async function loadAdminContent() {
             loadAdminContent();
           } catch (err) {
             console.error("Error deleting document:", err);
-            alert("Failed to delete post. Check console for details.");
+            alert("Failed to delete post.");
           }
         }
       });
@@ -162,7 +135,6 @@ async function loadAdminContent() {
   }
 }
 
-// --- Publish Resource ---
 const adminForm = byId("admin-add-form");
 if (adminForm) {
   adminForm.addEventListener("submit", async (e) => {
@@ -190,7 +162,6 @@ if (adminForm) {
   });
 }
 
-// --- Publish Blog ---
 const blogForm = byId("admin-blog-form");
 if (blogForm) {
   blogForm.addEventListener("submit", async (e) => {
@@ -216,7 +187,6 @@ if (blogForm) {
   });
 }
 
-// --- Schedule Class ---
 const classForm = byId("admin-class-form");
 if (classForm) {
   classForm.addEventListener("submit", async (e) => {
@@ -242,7 +212,6 @@ if (classForm) {
   });
 }
 
-// --- Broadcast Notification ---
 const notifForm = byId("admin-notif-form");
 if (notifForm) {
   notifForm.addEventListener("submit", async (e) => {
