@@ -232,11 +232,13 @@ function renderClasses() {
   });
 }
 
-// Notifications Rendering for students
+// Notifications Rendering & Badge Management
 async function loadNotificationsFromFirestore() {
   const container = byId("notifications-list");
   const emptyState = byId("notifications-empty");
-  if (!container) return;
+  const badge = byId("notification-badge");
+
+  if (!configured || !db) return;
 
   try {
     const snap = await getDocs(collection(db, "notifications"));
@@ -245,24 +247,46 @@ async function loadNotificationsFromFirestore() {
       notifications.push({ id: doc.id, ...doc.data() });
     });
 
-    container.innerHTML = "";
-    if (notifications.length === 0) {
-      if (emptyState) emptyState.hidden = false;
-      return;
-    }
-    if (emptyState) emptyState.hidden = true;
+    const totalCount = notifications.length;
+    const isNotificationsPage = window.location.pathname.includes("notifications.html");
 
-    notifications.forEach((notif) => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.style.marginBottom = "16px";
-      card.innerHTML = `
-        <span class="tag">${notif.date || "Announcement"}</span>
-        <h3>${notif.title}</h3>
-        <p style="margin-top: 8px;">${notif.message}</p>
-      `;
-      container.appendChild(card);
-    });
+    if (isNotificationsPage) {
+      localStorage.setItem("chemvibe_last_read_count", totalCount);
+      if (badge) badge.hidden = true;
+    } else {
+      const lastReadCount = parseInt(localStorage.getItem("chemvibe_last_read_count") || "0", 10);
+      const unreadCount = totalCount - lastReadCount;
+
+      if (badge) {
+        if (unreadCount > 0) {
+          badge.textContent = unreadCount;
+          badge.hidden = false;
+        } else {
+          badge.hidden = true;
+        }
+      }
+    }
+
+    if (container) {
+      container.innerHTML = "";
+      if (notifications.length === 0) {
+        if (emptyState) emptyState.hidden = false;
+        return;
+      }
+      if (emptyState) emptyState.hidden = true;
+
+      notifications.forEach((notif) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.style.marginBottom = "16px";
+        card.innerHTML = `
+          <span class="tag">${notif.date || "Announcement"}</span>
+          <h3>${notif.title}</h3>
+          <p style="margin-top: 8px;">${notif.message}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
   } catch (error) {
     console.error("Error loading notifications:", error);
   }
