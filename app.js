@@ -9,6 +9,7 @@ import {
 
 const byId = (id) => document.getElementById(id);
 
+// --- Mobile Navigation Toggle ---
 const menuToggle = byId("menu-toggle");
 const mainNav = byId("main-nav");
 if (menuToggle && mainNav) {
@@ -17,6 +18,7 @@ if (menuToggle && mainNav) {
   });
 }
 
+// --- Authentication State Management ---
 if (configured && auth) {
   onAuthStateChanged(auth, (user) => {
     const adminLink = byId("nav-admin");
@@ -53,6 +55,7 @@ if (configured && auth) {
   }
 }
 
+// --- Password Change Handling ---
 const passwordForm = byId("password-change-form");
 if (passwordForm) {
   passwordForm.addEventListener("submit", async (e) => {
@@ -86,21 +89,26 @@ if (passwordForm) {
   });
 }
 
+// --- Global Data Arrays ---
 let resources = [];
 let blogPosts = [];
 let liveClasses = [];
 
+// --- Fetch Data from Firestore ---
 async function loadDataFromFirestore() {
   if (!configured || !db) return;
 
   try {
+    // 1. Fetch Resources
     const resSnapshot = await getDocs(collection(db, "resources"));
     resources = [];
     resSnapshot.forEach((doc) => {
       resources.push({ id: doc.id, ...doc.data() });
     });
     renderResources(resources);
+    renderBookmarks(); // Render saved bookmarks on profile page if present
 
+    // 2. Fetch Blog Posts
     const blogSnapshot = await getDocs(collection(db, "blogs"));
     blogPosts = [];
     blogSnapshot.forEach((doc) => {
@@ -108,6 +116,7 @@ async function loadDataFromFirestore() {
     });
     renderBlog();
 
+    // 3. Fetch Live Classes
     const classSnapshot = await getDocs(collection(db, "classes"));
     liveClasses = [];
     classSnapshot.forEach((doc) => {
@@ -120,6 +129,7 @@ async function loadDataFromFirestore() {
   }
 }
 
+// --- Library Rendering & Bookmarking Support ---
 function renderResources(list) {
   const container = byId("resource-list");
   const emptyState = byId("resource-empty");
@@ -135,7 +145,10 @@ function renderResources(list) {
   }
   if (emptyState) emptyState.hidden = true;
 
+  const bookmarks = JSON.parse(localStorage.getItem("chemvibe_bookmarks") || "[]");
+
   list.forEach((res) => {
+    const isBookmarked = bookmarks.includes(res.id);
     const card = document.createElement("div");
     card.className = "card resource-card";
     card.innerHTML = `
@@ -145,7 +158,64 @@ function renderResources(list) {
       </div>
       <h3>${res.title}</h3>
       <p>${res.description}</p>
-      <a class="button primary" href="${res.link}" target="_blank" style="margin-top: 10px; display: inline-block; text-align: center; text-decoration: none;">View resource (Drive)</a>
+      <div style="display: flex; gap: 10px; margin-top: 12px;">
+        <a class="button primary" href="${res.link}" target="_blank" style="flex: 1; text-align: center; text-decoration: none;">View resource</a>
+        <button class="button secondary bookmark-btn" data-id="${res.id}" style="background: ${isBookmarked ? '#4d79ff' : 'transparent'}; color: ${isBookmarked ? 'white' : 'inherit'}; border: 1px solid #ccc; padding: 8px 12px; cursor: pointer;">
+          ${isBookmarked ? '★ Saved' : '☆ Save'}
+        </button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  // Attach bookmark toggle listeners
+  document.querySelectorAll(".bookmark-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const resId = e.target.dataset.id;
+      let currentBookmarks = JSON.parse(localStorage.getItem("chemvibe_bookmarks") || "[]");
+
+      if (currentBookmarks.includes(resId)) {
+        currentBookmarks = currentBookmarks.filter((id) => id !== resId);
+      } else {
+        currentBookmarks.push(resId);
+      }
+
+      localStorage.setItem("chemvibe_bookmarks", JSON.stringify(currentBookmarks));
+      filterAndRenderResources();
+      renderBookmarks();
+    });
+  });
+}
+
+// --- Render Bookmarks on Profile Page ---
+function renderBookmarks() {
+  const container = byId("bookmarked-list");
+  const emptyState = byId("bookmarked-empty");
+  if (!container) return;
+
+  const bookmarks = JSON.parse(localStorage.getItem("chemvibe_bookmarks") || "[]");
+  container.innerHTML = "";
+
+  const savedResources = resources.filter((res) => bookmarks.includes(res.id));
+
+  if (savedResources.length === 0) {
+    if (emptyState) emptyState.hidden = false;
+    return;
+  }
+  if (emptyState) emptyState.hidden = true;
+
+  savedResources.forEach((res) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.marginBottom = "12px";
+    card.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <span class="tag">${res.category || "Notes"}</span>
+          <h3 style="margin-top: 4px;">${res.title}</h3>
+        </div>
+        <a class="button primary" href="${res.link}" target="_blank" style="padding: 6px 12px; text-decoration: none;">View</a>
+      </div>
     `;
     container.appendChild(card);
   });
@@ -181,6 +251,7 @@ filterChips.forEach((chip) => {
   });
 });
 
+// --- Blog Rendering ---
 function renderBlog() {
   const container = byId("blog-list");
   const emptyState = byId("blog-empty");
@@ -206,6 +277,7 @@ function renderBlog() {
   });
 }
 
+// --- Live Classes Rendering ---
 function renderClasses() {
   const container = byId("classes-list");
   const emptyState = byId("classes-empty");
@@ -232,7 +304,7 @@ function renderClasses() {
   });
 }
 
-// Notifications Rendering & Badge Management
+// --- Notifications Rendering & Unread Badge Counter ---
 async function loadNotificationsFromFirestore() {
   const container = byId("notifications-list");
   const emptyState = byId("notifications-empty");
@@ -292,5 +364,6 @@ async function loadNotificationsFromFirestore() {
   }
 }
 
+// Initialize data fetching on startup
 loadDataFromFirestore();
 loadNotificationsFromFirestore();
