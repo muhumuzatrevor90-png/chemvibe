@@ -41,10 +41,10 @@
     <div id="admin-workspace-content" hidden>
       <section class="panel form-panel">
         <h2>Add New Study Resource / Note</h2>
-        <p class="muted">Publish notes, past papers, or guides to the student library.</p>
+        <p class="muted">Publish notes, past papers, or guides to the student library with automated payment linking.</p>
         <form id="admin-add-form" style="margin-top: 20px;">
           <label class="field-label">Resource Title
-            <input class="field" id="admin-title" type="text" required placeholder="e.g., Organic Chemistry Chapter 1 Notes">
+            <input class="field" id="admin-title" type="text" required placeholder="e.g., Physical Organic Notes">
           </label>
           <label class="field-label">Category
             <select class="field" id="admin-category">
@@ -54,10 +54,13 @@
               <option value="Guide">Guide</option>
             </select>
           </label>
-          <label class="field-label">Price (e.g., Free, $5.00, UGX 5000)
+          <label class="field-label">Price (e.g., Free, 5000)
             <input class="field" id="admin-price" type="text" required value="Free" placeholder="Free">
           </label>
-          <label class="field-label">Google Drive Link (URL)
+          <label class="field-label">Payment Checkout Link (Required if paid — e.g., Flutterwave/Paystack link)
+            <input class="field" id="admin-payment-link" type="url" placeholder="https://flutterwave.com/pay/...">
+          </label>
+          <label class="field-label">Google Drive Document Link (Unlocked after payment / Direct if Free)
             <input class="field" id="admin-link" type="url" required placeholder="https://drive.google.com/file/d/...">
           </label>
           <label class="field-label">Description
