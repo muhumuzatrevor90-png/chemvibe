@@ -1,13 +1,8 @@
-import { 
-  auth, db, configured, 
-  signOut, onAuthStateChanged, updatePassword 
-} from "./firebase.js";
-import { 
-  collection, 
-  getDocs 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { auth, db, configured, onAuthStateChanged } from "./firebase.js";
+import { collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const byId = (id) => document.getElementById(id);
+const ADMIN_EMAIL = "muhumuzatrevormbabazi@gmail.com";
 
 // --- Mobile Navigation Toggle ---
 const menuToggle = byId("menu-toggle");
@@ -18,352 +13,240 @@ if (menuToggle && mainNav) {
   });
 }
 
-// --- Authentication State Management ---
+// --- Admin Permission Check ---
 if (configured && auth) {
   onAuthStateChanged(auth, (user) => {
-    const adminLink = byId("nav-admin");
-    const profileAdminLink = byId("profile-admin-link");
-    const signoutBtn = byId("signout-button");
-    const profileSummary = byId("profile-summary");
-    const passwordSection = byId("password-section");
+    const authPanel = byId("admin-auth-panel");
+    const workspaceContent = byId("admin-workspace-content");
+    const statusTitle = byId("admin-status-title");
+    const statusDesc = byId("admin-status-desc");
+    const signinBtn = byId("admin-signin-btn");
 
-    if (user) {
-      if (adminLink) adminLink.hidden = false;
-      if (profileAdminLink) profileAdminLink.hidden = false;
-      if (signoutBtn) signoutBtn.hidden = false;
-      if (profileSummary) profileSummary.textContent = `Signed in as: ${user.email}`;
-      if (passwordSection) passwordSection.hidden = false;
+    if (user && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+      if (authPanel) authPanel.hidden = true;
+      if (workspaceContent) workspaceContent.hidden = false;
+      loadAdminContent();
     } else {
-      if (adminLink) adminLink.hidden = true;
-      if (profileAdminLink) profileAdminLink.hidden = true;
-      if (signoutBtn) signoutBtn.hidden = true;
-      if (profileSummary) profileSummary.textContent = "Not signed in.";
-      if (passwordSection) passwordSection.hidden = true;
+      if (statusTitle) statusTitle.textContent = "Access Denied";
+      if (statusDesc) statusDesc.textContent = "This account does not have administrator privileges.";
+      if (signinBtn) signinBtn.href = "signin.html";
     }
   });
+}
 
-  const signoutBtn = byId("signout-button");
-  if (signoutBtn) {
-    signoutBtn.addEventListener("click", async () => {
-      try {
-        await signOut(auth);
-        window.location.href = "signin.html";
-      } catch (err) {
-        console.error("Sign out error:", err);
-      }
-    });
+// --- Load Content for Management & Deletion ---
+async function loadAdminContent() {
+  if (!db) {
+    console.error("Firestore DB is not initialized.");
+    return;
   }
-}
-
-// --- Password Change Handling ---
-const passwordForm = byId("password-change-form");
-if (passwordForm) {
-  passwordForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const newPassword = byId("new-password").value;
-    const status = byId("password-status");
-
-    if (!configured || !auth.currentUser) {
-      status.textContent = "You must be signed in to change your password.";
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      status.textContent = "Password must be at least 6 characters long.";
-      return;
-    }
-
-    try {
-      status.textContent = "Updating password...";
-      await updatePassword(auth.currentUser, newPassword);
-      status.textContent = "Password updated successfully!";
-      passwordForm.reset();
-    } catch (error) {
-      console.error("Password update error:", error);
-      if (error.code === "auth/requires-recent-login") {
-        status.textContent = "For security, please sign out and sign back in before changing your password.";
-      } else {
-        status.textContent = `Failed to update password: ${error.message}`;
-      }
-    }
-  });
-}
-
-// --- Global Data Arrays ---
-let resources = [];
-let blogPosts = [];
-let liveClasses = [];
-
-// --- Fetch Data from Firestore ---
-async function loadDataFromFirestore() {
-  if (!configured || !db) return;
 
   try {
-    // 1. Fetch Resources
-    const resSnapshot = await getDocs(collection(db, "resources"));
-    resources = [];
-    resSnapshot.forEach((doc) => {
-      resources.push({ id: doc.id, ...doc.data() });
-    });
-    renderResources(resources);
-    renderBookmarks(); // Render saved bookmarks on profile page if present
-
-    // 2. Fetch Blog Posts
-    const blogSnapshot = await getDocs(collection(db, "blogs"));
-    blogPosts = [];
-    blogSnapshot.forEach((doc) => {
-      blogPosts.push({ id: doc.id, ...doc.data() });
-    });
-    renderBlog();
-
-    // 3. Fetch Live Classes
-    const classSnapshot = await getDocs(collection(db, "classes"));
-    liveClasses = [];
-    classSnapshot.forEach((doc) => {
-      liveClasses.push({ id: doc.id, ...doc.data() });
-    });
-    renderClasses();
-
-  } catch (error) {
-    console.error("Error fetching data from Firestore:", error);
-  }
-}
-
-// --- Library Rendering & Bookmarking Support ---
-function renderResources(list) {
-  const container = byId("resource-list");
-  const emptyState = byId("resource-empty");
-  const countLabel = byId("resource-count");
-  if (!container) return;
-
-  container.innerHTML = "";
-  if (countLabel) countLabel.textContent = `${list.length} resources`;
-
-  if (list.length === 0) {
-    if (emptyState) emptyState.hidden = false;
-    return;
-  }
-  if (emptyState) emptyState.hidden = true;
-
-  const bookmarks = JSON.parse(localStorage.getItem("chemvibe_bookmarks") || "[]");
-
-  list.forEach((res) => {
-    const isBookmarked = bookmarks.includes(res.id);
-    const card = document.createElement("div");
-    card.className = "card resource-card";
-    card.innerHTML = `
-      <div class="card-meta">
-        <span class="tag">${res.category || "Notes"}</span>
-        <span class="price">${res.price || "Free"}</span>
-      </div>
-      <h3>${res.title}</h3>
-      <p>${res.description}</p>
-      <div style="display: flex; gap: 10px; margin-top: 12px;">
-        <a class="button primary" href="${res.link}" target="_blank" style="flex: 1; text-align: center; text-decoration: none;">View resource</a>
-        <button class="button secondary bookmark-btn" data-id="${res.id}" style="background: ${isBookmarked ? '#4d79ff' : 'transparent'}; color: ${isBookmarked ? 'white' : 'inherit'}; border: 1px solid #ccc; padding: 8px 12px; cursor: pointer;">
-          ${isBookmarked ? '★ Saved' : '☆ Save'}
-        </button>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-
-  // Attach bookmark toggle listeners
-  document.querySelectorAll(".bookmark-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      const resId = e.target.dataset.id;
-      let currentBookmarks = JSON.parse(localStorage.getItem("chemvibe_bookmarks") || "[]");
-
-      if (currentBookmarks.includes(resId)) {
-        currentBookmarks = currentBookmarks.filter((id) => id !== resId);
-      } else {
-        currentBookmarks.push(resId);
-      }
-
-      localStorage.setItem("chemvibe_bookmarks", JSON.stringify(currentBookmarks));
-      filterAndRenderResources();
-      renderBookmarks();
-    });
-  });
-}
-
-// --- Render Bookmarks on Profile Page ---
-function renderBookmarks() {
-  const container = byId("bookmarked-list");
-  const emptyState = byId("bookmarked-empty");
-  if (!container) return;
-
-  const bookmarks = JSON.parse(localStorage.getItem("chemvibe_bookmarks") || "[]");
-  container.innerHTML = "";
-
-  const savedResources = resources.filter((res) => bookmarks.includes(res.id));
-
-  if (savedResources.length === 0) {
-    if (emptyState) emptyState.hidden = false;
-    return;
-  }
-  if (emptyState) emptyState.hidden = true;
-
-  savedResources.forEach((res) => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.style.marginBottom = "12px";
-    card.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <span class="tag">${res.category || "Notes"}</span>
-          <h3 style="margin-top: 4px;">${res.title}</h3>
-        </div>
-        <a class="button primary" href="${res.link}" target="_blank" style="padding: 6px 12px; text-decoration: none;">View</a>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-}
-
-const searchInput = byId("resource-search");
-const filterChips = document.querySelectorAll("#resource-filters .chip");
-
-function filterAndRenderResources() {
-  const queryText = searchInput ? searchInput.value.toLowerCase() : "";
-  const activeChip = document.querySelector("#resource-filters .chip.active");
-  const selectedType = activeChip ? activeChip.dataset.type : "all";
-
-  const filtered = resources.filter((res) => {
-    const matchesQuery = (res.title && res.title.toLowerCase().includes(queryText)) || 
-                         (res.description && res.description.toLowerCase().includes(queryText));
-    const matchesType = selectedType === "all" || (res.category && res.category.toLowerCase() === selectedType.toLowerCase());
-    return matchesQuery && matchesType;
-  });
-
-  renderResources(filtered);
-}
-
-if (searchInput) {
-  searchInput.addEventListener("input", filterAndRenderResources);
-}
-
-filterChips.forEach((chip) => {
-  chip.addEventListener("click", () => {
-    filterChips.forEach((c) => c.classList.remove("active"));
-    chip.classList.add("active");
-    filterAndRenderResources();
-  });
-});
-
-// --- Blog Rendering ---
-function renderBlog() {
-  const container = byId("blog-list");
-  const emptyState = byId("blog-empty");
-  if (!container) return;
-
-  container.innerHTML = "";
-  if (blogPosts.length === 0) {
-    if (emptyState) emptyState.hidden = false;
-    return;
-  }
-  if (emptyState) emptyState.hidden = true;
-
-  blogPosts.forEach((post) => {
-    const card = document.createElement("div");
-    card.className = "card blog-card";
-    card.innerHTML = `
-      <span class="muted">${post.date || ""}</span>
-      <h2>${post.title}</h2>
-      <p>${post.summary}</p>
-      ${post.link && post.link !== "#" ? `<a class="text-link" href="${post.link}" target="_blank" style="display: inline-block; margin-top: 8px;">Read article / View file →</a>` : ""}
-    `;
-    container.appendChild(card);
-  });
-}
-
-// --- Live Classes Rendering ---
-function renderClasses() {
-  const container = byId("classes-list");
-  const emptyState = byId("classes-empty");
-  if (!container) return;
-
-  container.innerHTML = "";
-  if (liveClasses.length === 0) {
-    if (emptyState) emptyState.hidden = false;
-    return;
-  }
-  if (emptyState) emptyState.hidden = true;
-
-  liveClasses.forEach((cls) => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <span class="tag">Live Session</span>
-      <h3>${cls.title}</h3>
-      <p><strong>Host:</strong> ${cls.host}</p>
-      <p><strong>Time:</strong> ${cls.time}</p>
-      <a class="button primary" href="${cls.link}" target="_blank" style="margin-top: 10px; display: inline-block; text-align: center; text-decoration: none;">Join session</a>
-    `;
-    container.appendChild(card);
-  });
-}
-
-// --- Notifications Rendering & Unread Badge Counter ---
-async function loadNotificationsFromFirestore() {
-  const container = byId("notifications-list");
-  const emptyState = byId("notifications-empty");
-  const badge = byId("notification-badge");
-
-  if (!configured || !db) return;
-
-  try {
-    const snap = await getDocs(collection(db, "notifications"));
-    let notifications = [];
-    snap.forEach((doc) => {
-      notifications.push({ id: doc.id, ...doc.data() });
-    });
-
-    const totalCount = notifications.length;
-    const isNotificationsPage = window.location.pathname.includes("notifications.html");
-
-    if (isNotificationsPage) {
-      localStorage.setItem("chemvibe_last_read_count", totalCount);
-      if (badge) badge.hidden = true;
-    } else {
-      const lastReadCount = parseInt(localStorage.getItem("chemvibe_last_read_count") || "0", 10);
-      const unreadCount = totalCount - lastReadCount;
-
-      if (badge) {
-        if (unreadCount > 0) {
-          badge.textContent = unreadCount;
-          badge.hidden = false;
-        } else {
-          badge.hidden = true;
-        }
-      }
-    }
-
-    if (container) {
-      container.innerHTML = "";
-      if (notifications.length === 0) {
-        if (emptyState) emptyState.hidden = false;
-        return;
-      }
-      if (emptyState) emptyState.hidden = true;
-
-      notifications.forEach((notif) => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.style.marginBottom = "16px";
-        card.innerHTML = `
-          <span class="tag">${notif.date || "Announcement"}</span>
-          <h3>${notif.title}</h3>
-          <p style="margin-top: 8px;">${notif.message}</p>
+    // 1. Resources
+    const resContainer = byId("admin-resource-list");
+    if (resContainer) {
+      const resSnap = await getDocs(collection(db, "resources"));
+      resContainer.innerHTML = resSnap.empty ? "<p class='muted'>No resources found.</p>" : "";
+      resSnap.forEach((docSnap) => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.marginBottom = "10px";
+        div.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.category || "Notes"} — ${data.price || "Free"})</span></div>
+            <button class="button secondary delete-btn" data-coll="resources" data-id="${docSnap.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+          </div>
         `;
-        container.appendChild(card);
+        resContainer.appendChild(div);
       });
     }
+
+    // 2. Blogs
+    const blogContainer = byId("admin-blog-list");
+    if (blogContainer) {
+      const blogSnap = await getDocs(collection(db, "blogs"));
+      blogContainer.innerHTML = blogSnap.empty ? "<p class='muted'>No blog posts found.</p>" : "";
+      blogSnap.forEach((docSnap) => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.marginBottom = "10px";
+        div.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.date || ""})</span></div>
+            <button class="button secondary delete-btn" data-coll="blogs" data-id="${docSnap.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+          </div>
+        `;
+        blogContainer.appendChild(div);
+      });
+    }
+
+    // 3. Classes
+    const classContainer = byId("admin-class-list");
+    if (classContainer) {
+      const classSnap = await getDocs(collection(db, "classes"));
+      classContainer.innerHTML = classSnap.empty ? "<p class='muted'>No live classes found.</p>" : "";
+      classSnap.forEach((docSnap) => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.marginBottom = "10px";
+        div.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.time || ""})</span></div>
+            <button class="button secondary delete-btn" data-coll="classes" data-id="${docSnap.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+          </div>
+        `;
+        classContainer.appendChild(div);
+      });
+    }
+
+    // 4. Notifications
+    const notifContainer = byId("admin-notif-list");
+    if (notifContainer) {
+      const notifSnap = await getDocs(collection(db, "notifications"));
+      notifContainer.innerHTML = notifSnap.empty ? "<p class='muted'>No notifications found.</p>" : "";
+      notifSnap.forEach((docSnap) => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.marginBottom = "10px";
+        div.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.date || ""})</span></div>
+            <button class="button secondary delete-btn" data-coll="notifications" data-id="${docSnap.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+          </div>
+        `;
+        notifContainer.appendChild(div);
+      });
+    }
+
+    // Attach delete handlers to all delete buttons
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        const collectionName = e.target.dataset.coll;
+        const docId = e.target.dataset.id;
+
+        if (confirm("Are you sure you want to delete this post?")) {
+          try {
+            await deleteDoc(doc(db, collectionName, docId));
+            alert("Post deleted successfully!");
+            loadAdminContent();
+          } catch (err) {
+            console.error("Error deleting document:", err);
+            alert("Failed to delete post. Check console for details.");
+          }
+        }
+      });
+    });
+
   } catch (error) {
-    console.error("Error loading notifications:", error);
+    console.error("Error loading admin content from Firestore:", error);
   }
 }
 
-// Initialize data fetching on startup
-loadDataFromFirestore();
-loadNotificationsFromFirestore();
+// --- Publish Resource ---
+const adminForm = byId("admin-add-form");
+if (adminForm) {
+  adminForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const title = byId("admin-title").value;
+    const category = byId("admin-category").value;
+    const price = byId("admin-price").value.trim() || "Free";
+    const link = byId("admin-link").value;
+    const description = byId("admin-desc").value;
+
+    if (!title || !link || !description) return;
+
+    try {
+      await addDoc(collection(db, "resources"), {
+        title, category, price, description, link, createdAt: Date.now()
+      });
+      adminForm.reset();
+      byId("admin-price").value = "Free";
+      alert("Study resource published successfully!");
+      loadAdminContent();
+    } catch (error) {
+      console.error("Error adding resource:", error);
+      alert("Failed to publish resource.");
+    }
+  });
+}
+
+// --- Publish Blog ---
+const blogForm = byId("admin-blog-form");
+if (blogForm) {
+  blogForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const title = byId("blog-title").value;
+    const date = byId("blog-date").value;
+    const link = byId("blog-link").value;
+    const summary = byId("blog-summary").value;
+
+    if (!title || !summary) return;
+
+    try {
+      await addDoc(collection(db, "blogs"), {
+        title, date, link: link || "#", summary, createdAt: Date.now()
+      });
+      blogForm.reset();
+      alert("Blog article published successfully!");
+      loadAdminContent();
+    } catch (error) {
+      console.error("Error adding blog post:", error);
+      alert("Failed to publish blog post.");
+    }
+  });
+}
+
+// --- Schedule Class ---
+const classForm = byId("admin-class-form");
+if (classForm) {
+  classForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const title = byId("class-title").value;
+    const host = byId("class-host").value;
+    const time = byId("class-time").value;
+    const link = byId("class-link").value;
+
+    if (!title || !host || !link) return;
+
+    try {
+      await addDoc(collection(db, "classes"), {
+        title, host, time, link, createdAt: Date.now()
+      });
+      classForm.reset();
+      alert("Live class scheduled successfully!");
+      loadAdminContent();
+    } catch (error) {
+      console.error("Error scheduling class:", error);
+      alert("Failed to schedule class.");
+    }
+  });
+}
+
+// --- Broadcast Notification ---
+const notifForm = byId("admin-notif-form");
+if (notifForm) {
+  notifForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const title = byId("notif-title").value;
+    const date = byId("notif-date").value;
+    const message = byId("notif-message").value;
+
+    if (!title || !message) return;
+
+    try {
+      await addDoc(collection(db, "notifications"), {
+        title, date, message, createdAt: Date.now()
+      });
+      notifForm.reset();
+      alert("Notification broadcasted successfully!");
+      loadAdminContent();
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      alert("Failed to broadcast notification.");
+    }
+  });
+}
