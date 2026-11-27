@@ -3,85 +3,40 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Contact details and information about ChemVibe, creator Trevor Mbabazi, and content provider Dr. Ruth Mbabazi.">
-  <title>About Us — ChemVibe</title>
+  <title>About — ChemVibe</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"></span>ChemVibe</a>
+    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>ChemVibe</a>
     <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
     <nav class="nav" id="main-nav">
       <a href="index.html">Library</a>
       <a href="blog.html">Blog</a>
       <a href="classes.html">Live classes</a>
       <a class="active" href="about.html">About</a>
-      <a href="notifications.html">Notifications</a>
+      <a href="notifications.html">Notifications <span id="notification-badge" class="badge" hidden>0</span></a>
       <a href="profile.html">Profile</a>
       <a href="admin.html" id="nav-admin" hidden>Admin</a>
+      <button id="theme-toggle" class="button secondary" style="padding: 6px 10px; cursor: pointer; background: transparent; border: 1px solid currentColor;" aria-label="Toggle dark mode">🌙</button>
       <a class="nav-button" href="signin.html">Sign in</a>
     </nav>
   </header>
 
   <main class="container">
     <section class="page-hero">
-      <span class="eyebrow">ABOUT CHEMVIBE</span>
-      <h1>Making chemistry <span>accessible to everyone.</span></h1>
-      <p>An independent student study hub built to help university chemistry learners grasp tough concepts, access organized study materials, and learn together.</p>
+      <span class="eyebrow">PLATFORM OVERVIEW</span>
+      <h1>About ChemVibe</h1>
+      <p>Empowering chemistry students with accessible resources and real-time guidance.</p>
     </section>
 
-    <section class="section">
-      <div class="card-grid">
-        <article class="card">
-          <span class="tag">OUR MISSION</span>
-          <h3>Why ChemVibe exists</h3>
-          <p>University chemistry can feel overwhelming when notes, past papers, and explanations are scattered. ChemVibe brings concise topic guides, practice materials, and live study sessions into one clean, distraction-free space.</p>
-        </article>
-
-        <article class="card">
-          <span class="tag">WHAT WE OFFER</span>
-          <h3>Built for real studying</h3>
-          <p>Students can filter through curated notes and past papers in the library, read bite-sized concept breakdowns on the blog, and join live interactive chemistry sessions from anywhere.</p>
-        </article>
-
-        <article class="card">
-          <span class="tag">INDEPENDENT PROJECT</span>
-          <h3>Student-first focus</h3>
-          <p>ChemVibe is an independent educational initiative focused on clarity, practical problem-solving, and helping fellow students build confidence in physical, organic, and inorganic chemistry.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="panel form-panel">
-      <span class="tag">THE CREATOR</span>
-      <h2 style="margin-top: 12px;">Trevor Mbabazi</h2>
-      <p style="margin-top: 8px;">
-        ChemVibe was created and developed by <strong>Trevor Mbabazi</strong> with a simple goal: to make studying chemistry clearer, better organized, and less stressful for university students. Combining a passion for chemistry education and modern web development, Trevor built ChemVibe from the ground up as a dedicated digital space where learners can find reliable study notes, practice problems, and live support.
-      </p>
-      <div class="contact-box">
-        <p><strong>Phone:</strong> <a href="tel:0773428340">0773428340</a></p>
-        <p><strong>Email:</strong> <a href="mailto:muhumuzatrevormbabazi@gmail.com">muhumuzatrevormbabazi@gmail.com</a></p>
-      </div>
-      <div class="button-row">
-        <a class="button primary" href="index.html">Explore the Library</a>
-        <a class="button secondary" href="blog.html">Read the Blog</a>
-      </div>
-    </section>
-
-    <section class="panel form-panel">
-      <span class="tag">ACADEMIC LEAD &amp; CONTENT PROVIDER</span>
-      <h2 style="margin-top: 12px;">Dr. Ruth Mbabazi</h2>
-      <p style="margin-top: 8px;">
-        The academic backbone, study notes, and core concept guides featured across ChemVibe are provided and overseen by <strong>Dr. Ruth Mbabazi</strong>, an esteemed lecturer and researcher in the Department of Chemistry at Makerere University. With extensive expertise in chemical sciences and university-level instruction, Dr. Ruth Mbabazi brings rigorous academic insight, accurate problem sets, and crystal-clear explanations to ensure students receive reliable, high-standard educational material for their degree programs.
-      </p>
-      <div class="contact-box">
-        <p><strong>Phone:</strong> <a href="tel:0775096290">0775096290</a></p>
-        <p><strong>Email:</strong> <a href="mailto:ruthmbabazi60@gmail.com">ruthmbabazi60@gmail.com</a></p>
-      </div>
+    <section class="panel">
+      <h2>Welcome to ChemVibe</h2>
+      <p style="margin-top: 12px;">ChemVibe is designed to make learning chemistry intuitive, organized, and collaborative. Students can browse curated notes, past papers, join live interactive tutoring classes, and save their favorite resources directly to their profile.</p>
     </section>
   </main>
 
-  <footer class="footer">ChemVibe is an independent student project created by Trevor Mbabazi with educational content provided by Dr. Ruth Mbabazi.</footer>
+  <footer class="footer">ChemVibe About</footer>
   <script type="module" src="app.js"></script>
 </body>
 </html>
