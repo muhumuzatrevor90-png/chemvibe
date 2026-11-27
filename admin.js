@@ -142,14 +142,26 @@ if (adminForm) {
     const title = byId("admin-title").value;
     const category = byId("admin-category").value;
     const price = byId("admin-price").value.trim() || "Free";
+    const paymentLink = byId("admin-payment-link").value.trim();
     const link = byId("admin-link").value;
     const description = byId("admin-desc").value;
 
     if (!title || !link || !description) return;
 
+    if (price.toLowerCase() !== "free" && !paymentLink) {
+      alert("Please provide a Payment Checkout Link for paid resources.");
+      return;
+    }
+
     try {
       await addDoc(collection(db, "resources"), {
-        title, category, price, description, link, createdAt: Date.now()
+        title, 
+        category, 
+        price, 
+        paymentLink: paymentLink || "", 
+        description, 
+        link, 
+        createdAt: Date.now()
       });
       adminForm.reset();
       byId("admin-price").value = "Free";
