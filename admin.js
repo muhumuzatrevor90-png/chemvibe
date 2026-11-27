@@ -47,15 +47,15 @@ async function loadAdminContent() {
     if (resContainer) {
       const resSnap = await getDocs(collection(db, "resources"));
       resContainer.innerHTML = resSnap.empty ? "<p class='muted'>No resources found.</p>" : "";
-      resSnap.forEach((document) => {
-        const data = document.data();
+      resSnap.forEach((docSnap) => {
+        const data = docSnap.data();
         const div = document.createElement("div");
         div.className = "card";
         div.style.marginBottom = "10px";
         div.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.category || "Notes"} — ${data.price || "Free"})</span></div>
-            <button class="button secondary delete-btn" data-coll="resources" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+            <button class="button secondary delete-btn" data-coll="resources" data-id="${docSnap.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
           </div>
         `;
         resContainer.appendChild(div);
@@ -67,15 +67,15 @@ async function loadAdminContent() {
     if (blogContainer) {
       const blogSnap = await getDocs(collection(db, "blogs"));
       blogContainer.innerHTML = blogSnap.empty ? "<p class='muted'>No blog posts found.</p>" : "";
-      blogSnap.forEach((document) => {
-        const data = document.data();
+      blogSnap.forEach((docSnap) => {
+        const data = docSnap.data();
         const div = document.createElement("div");
         div.className = "card";
         div.style.marginBottom = "10px";
         div.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.date || ""})</span></div>
-            <button class="button secondary delete-btn" data-coll="blogs" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+            <button class="button secondary delete-btn" data-coll="blogs" data-id="${docSnap.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
           </div>
         `;
         blogContainer.appendChild(div);
@@ -87,15 +87,15 @@ async function loadAdminContent() {
     if (classContainer) {
       const classSnap = await getDocs(collection(db, "classes"));
       classContainer.innerHTML = classSnap.empty ? "<p class='muted'>No live classes found.</p>" : "";
-      classSnap.forEach((document) => {
-        const data = document.data();
+      classSnap.forEach((docSnap) => {
+        const data = docSnap.data();
         const div = document.createElement("div");
         div.className = "card";
         div.style.marginBottom = "10px";
         div.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.time || ""})</span></div>
-            <button class="button secondary delete-btn" data-coll="classes" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+            <button class="button secondary delete-btn" data-coll="classes" data-id="${docSnap.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
           </div>
         `;
         classContainer.appendChild(div);
@@ -107,15 +107,15 @@ async function loadAdminContent() {
     if (notifContainer) {
       const notifSnap = await getDocs(collection(db, "notifications"));
       notifContainer.innerHTML = notifSnap.empty ? "<p class='muted'>No notifications found.</p>" : "";
-      notifSnap.forEach((document) => {
-        const data = document.data();
+      notifSnap.forEach((docSnap) => {
+        const data = docSnap.data();
         const div = document.createElement("div");
         div.className = "card";
         div.style.marginBottom = "10px";
         div.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.date || ""})</span></div>
-            <button class="button secondary delete-btn" data-coll="notifications" data-id="${document.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
+            <button class="button secondary delete-btn" data-coll="notifications" data-id="${docSnap.id}" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer;">Delete</button>
           </div>
         `;
         notifContainer.appendChild(div);
