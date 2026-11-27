@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Profile — ChemVibe</title>
+  <title>Profile — ChemVibe</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,48 +15,56 @@
       <a href="blog.html">Blog</a>
       <a href="classes.html">Live classes</a>
       <a href="about.html">About</a>
-      <a href="notifications.html">Notifications</a>
+      <a href="notifications.html">Notifications <span id="notification-badge" class="badge" hidden>0</span></a>
       <a class="active" href="profile.html">Profile</a>
       <a href="admin.html" id="nav-admin" hidden>Admin</a>
+      <button id="theme-toggle" class="button secondary" style="padding: 6px 10px; cursor: pointer; background: transparent; border: 1px solid currentColor;" aria-label="Toggle dark mode">🌙</button>
       <a class="nav-button" href="signin.html">Sign in</a>
     </nav>
   </header>
 
   <main class="container">
     <section class="page-hero">
-      <span class="eyebrow">YOUR ACCOUNT</span>
-      <h1>Student Profile</h1>
-      <p>Manage your ChemVibe account settings and credentials.</p>
+      <span class="eyebrow">STUDENT ACCOUNT</span>
+      <h1>My Profile</h1>
+      <p>Manage your account settings, saved bookmarks, and preferences.</p>
     </section>
 
-    <section class="panel form-panel">
-      <h2>Account Details</h2>
-      <p class="muted" id="profile-summary">Not signed in.</p>
-      <div class="button-row" style="margin-top: 18px;">
-        <a class="button primary" href="signin.html">Sign in</a>
-        <a class="button secondary" href="signup.html">Create account</a>
-        <a class="button primary" id="profile-admin-link" href="admin.html" hidden>Open Admin Workspace</a>
-        <button class="button danger" id="signout-button" type="button" hidden>Sign out</button>
+    <!-- Account Details Panel -->
+    <section class="panel">
+      <h2>Account Status</h2>
+      <p class="muted" id="profile-summary" style="margin-top: 8px;">Loading profile...</p>
+      
+      <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+        <a class="button primary" href="admin.html" id="profile-admin-link" hidden>Admin Workspace</a>
+        <button class="button secondary" id="signout-button" hidden>Sign out</button>
       </div>
     </section>
 
-    <section class="panel form-panel" id="password-section" hidden>
-      <h2>Change Password</h2>
-      <p class="muted">Update your account password securely.</p>
-      
-      <form id="password-change-form" style="margin-top: 16px;">
-        <label class="field-label">New Password (min. 6 characters)
-          <input class="field" id="new-password" type="password" required placeholder="••••••••">
-        </label>
-        <button class="button primary" type="submit" id="update-password-btn" style="margin-top: 12px;">Update Password</button>
-        <p class="status" id="password-status" role="status" aria-live="polite"></p>
-      </form>
+    <!-- Bookmarked Resources Section -->
+    <section class="panel">
+      <h2>My Bookmarked Resources</h2>
+      <p class="muted">Quick access to your saved notes and past papers.</p>
+      <div id="bookmarked-list" style="margin-top: 20px;"></div>
+      <div id="bookmarked-empty" hidden style="text-align: center; padding: 20px;">
+        <p class="muted">No bookmarks saved yet. Click "Save" on any resource in the library!</p>
+      </div>
     </section>
 
-    <p class="notice">Keep your account credentials private.</p>
+    <!-- Password Change Section -->
+    <section class="panel" id="password-section" hidden>
+      <h2>Change Password</h2>
+      <form id="password-change-form" style="margin-top: 16px;">
+        <label class="field-label">New Password
+          <input class="field" id="new-password" type="password" required placeholder="At least 6 characters">
+        </label>
+        <button class="button primary" type="submit" style="margin-top: 8px;">Update Password</button>
+        <p class="muted" id="password-status" style="margin-top: 8px; font-size: 0.85rem;"></p>
+      </form>
+    </section>
   </main>
 
-  <footer class="footer">ChemVibe is an independent student project created by Trevor Mbabazi with educational content provided by Dr. Ruth Mbabazi.</footer>
+  <footer class="footer">ChemVibe Profile</footer>
   <script type="module" src="app.js"></script>
 </body>
 </html>
