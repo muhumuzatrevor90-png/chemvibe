@@ -129,7 +129,7 @@ async function loadDataFromFirestore() {
   }
 }
 
-// --- Library Rendering & Paid/Free Resource Support ---
+// --- Library Rendering with Payment Gateway Routing ---
 function renderResources(list) {
   const container = byId("resource-list");
   const emptyState = byId("resource-empty");
@@ -150,6 +150,7 @@ function renderResources(list) {
   list.forEach((res) => {
     const isBookmarked = bookmarks.includes(res.id);
     const isFree = !res.price || res.price.toLowerCase() === "free";
+    const actionUrl = isFree ? res.link : (res.paymentLink || "#");
 
     const card = document.createElement("div");
     card.className = "card resource-card";
@@ -165,8 +166,8 @@ function renderResources(list) {
       <div style="display: flex; gap: 10px; margin-top: 12px;">
         ${
           isFree 
-            ? `<a class="button primary" href="${res.link}" target="_blank" style="flex: 1;">View resource</a>`
-            : `<a class="button primary" href="${res.link}" target="_blank" style="flex: 1; background-color: #059669;">Buy Now (${res.price})</a>`
+            ? `<a class="button primary" href="${actionUrl}" target="_blank" style="flex: 1;">View resource</a>`
+            : `<a class="button primary" href="${actionUrl}" target="_blank" style="flex: 1; background-color: #059669;">Buy Now (${res.price})</a>`
         }
         <button class="button secondary bookmark-btn" data-id="${res.id}" style="background: ${isBookmarked ? '#0284c7' : '#e2e8f0'}; color: ${isBookmarked ? 'white' : '#1e293b'};">
           ${isBookmarked ? '★ Saved' : '☆ Save'}
