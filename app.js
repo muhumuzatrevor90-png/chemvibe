@@ -9,6 +9,7 @@ import {
 
 const byId = (id) => document.getElementById(id);
 
+// --- Mobile Navigation Toggle ---
 const menuToggle = byId("menu-toggle");
 const mainNav = byId("main-nav");
 if (menuToggle && mainNav) {
@@ -17,6 +18,7 @@ if (menuToggle && mainNav) {
   });
 }
 
+// --- Authentication State Management ---
 if (configured && auth) {
   onAuthStateChanged(auth, (user) => {
     const adminLink = byId("nav-admin");
@@ -53,6 +55,7 @@ if (configured && auth) {
   }
 }
 
+// --- Password Change Handling ---
 const passwordForm = byId("password-change-form");
 if (passwordForm) {
   passwordForm.addEventListener("submit", async (e) => {
@@ -86,14 +89,17 @@ if (passwordForm) {
   });
 }
 
+// --- Global Data Arrays ---
 let resources = [];
 let blogPosts = [];
 let liveClasses = [];
 
+// --- Fetch Data from Firestore ---
 async function loadDataFromFirestore() {
   if (!configured || !db) return;
 
   try {
+    // 1. Fetch Resources
     const resSnapshot = await getDocs(collection(db, "resources"));
     resources = [];
     resSnapshot.forEach((doc) => {
@@ -102,6 +108,7 @@ async function loadDataFromFirestore() {
     renderResources(resources);
     renderBookmarks();
 
+    // 2. Fetch Blog Posts
     const blogSnapshot = await getDocs(collection(db, "blogs"));
     blogPosts = [];
     blogSnapshot.forEach((doc) => {
@@ -109,6 +116,7 @@ async function loadDataFromFirestore() {
     });
     renderBlog();
 
+    // 3. Fetch Live Classes
     const classSnapshot = await getDocs(collection(db, "classes"));
     liveClasses = [];
     classSnapshot.forEach((doc) => {
@@ -121,6 +129,7 @@ async function loadDataFromFirestore() {
   }
 }
 
+// --- Library Rendering & Paid/Free Resource Support ---
 function renderResources(list) {
   const container = byId("resource-list");
   const emptyState = byId("resource-empty");
@@ -140,6 +149,8 @@ function renderResources(list) {
 
   list.forEach((res) => {
     const isBookmarked = bookmarks.includes(res.id);
+    const isFree = !res.price || res.price.toLowerCase() === "free";
+
     const card = document.createElement("div");
     card.className = "card resource-card";
     card.innerHTML = `
@@ -152,7 +163,11 @@ function renderResources(list) {
         <p>${res.description}</p>
       </div>
       <div style="display: flex; gap: 10px; margin-top: 12px;">
-        <a class="button primary" href="${res.link}" target="_blank" style="flex: 1;">View resource</a>
+        ${
+          isFree 
+            ? `<a class="button primary" href="${res.link}" target="_blank" style="flex: 1;">View resource</a>`
+            : `<a class="button primary" href="${res.link}" target="_blank" style="flex: 1; background-color: #059669;">Buy Now (${res.price})</a>`
+        }
         <button class="button secondary bookmark-btn" data-id="${res.id}" style="background: ${isBookmarked ? '#0284c7' : '#e2e8f0'}; color: ${isBookmarked ? 'white' : '#1e293b'};">
           ${isBookmarked ? '★ Saved' : '☆ Save'}
         </button>
@@ -179,6 +194,7 @@ function renderResources(list) {
   });
 }
 
+// --- Render Bookmarks on Profile Page ---
 function renderBookmarks() {
   const container = byId("bookmarked-list");
   const emptyState = byId("bookmarked-empty");
@@ -242,6 +258,7 @@ filterChips.forEach((chip) => {
   });
 });
 
+// --- Blog Rendering ---
 function renderBlog() {
   const container = byId("blog-list");
   const emptyState = byId("blog-empty");
@@ -267,6 +284,7 @@ function renderBlog() {
   });
 }
 
+// --- Live Classes Rendering ---
 function renderClasses() {
   const container = byId("classes-list");
   const emptyState = byId("classes-empty");
@@ -295,6 +313,7 @@ function renderClasses() {
   });
 }
 
+// --- Notifications Rendering & Unread Badge Counter ---
 async function loadNotificationsFromFirestore() {
   const container = byId("notifications-list");
   const emptyState = byId("notifications-empty");
