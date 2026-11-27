@@ -3,39 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live classes — ChemVibe</title>
+  <title>Live Classes — ChemVibe</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"></span>ChemVibe</a>
+    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>ChemVibe</a>
     <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
     <nav class="nav" id="main-nav">
       <a href="index.html">Library</a>
       <a href="blog.html">Blog</a>
       <a class="active" href="classes.html">Live classes</a>
       <a href="about.html">About</a>
-      <a href="notifications.html">Notifications</a>
+      <a href="notifications.html">Notifications <span id="notification-badge" class="badge" hidden>0</span></a>
       <a href="profile.html">Profile</a>
       <a href="admin.html" id="nav-admin" hidden>Admin</a>
+      <button id="theme-toggle" class="button secondary" style="padding: 6px 10px; cursor: pointer; background: transparent; border: 1px solid currentColor;" aria-label="Toggle dark mode">🌙</button>
       <a class="nav-button" href="signin.html">Sign in</a>
     </nav>
   </header>
 
   <main class="container">
-    <section class="page-hero compact">
-      <span class="eyebrow">LEARN TOGETHER</span>
-      <h1>Live chemistry classes</h1>
-      <p>Upcoming sessions and host-provided meeting links appear here.</p>
+    <section class="page-hero">
+      <span class="eyebrow">INTERACTIVE SESSIONS</span>
+      <h1>Live Classes</h1>
+      <p>Join scheduled tutoring sessions, homework walk-throughs, and live Q&As.</p>
     </section>
 
-    <section class="section">
-      <div class="card-grid" id="classes-list"></div>
-      <div class="empty-state" id="classes-empty">No classes are scheduled right now. Check back soon!</div>
+    <section class="panel">
+      <div id="classes-list"></div>
+      <div id="classes-empty" hidden style="text-align: center; padding: 20px;">
+        <p class="muted">No live classes scheduled at the moment.</p>
+      </div>
     </section>
   </main>
 
-  <footer class="footer">Only join sessions from hosts you recognize.</footer>
+  <footer class="footer">ChemVibe Live Classes</footer>
   <script type="module" src="app.js"></script>
 </body>
 </html>
