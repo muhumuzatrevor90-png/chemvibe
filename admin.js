@@ -36,6 +36,34 @@ async function loadAdminContent() {
   if (!db) return;
 
   try {
+    // 1. Load Student Resource Questions/Comments
+    const commentContainer = byId("admin-comment-list");
+    if (commentContainer) {
+      const commentSnap = await getDocs(collection(db, "resource_comments"));
+      commentContainer.innerHTML = commentSnap.empty ? "<p class='muted'>No student questions yet.</p>" : "";
+      commentSnap.forEach((docSnap) => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.marginBottom = "10px";
+        div.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+            <div style="flex: 1;">
+              <span class="tag">${data.resourceTitle || "Resource"}</span>
+              <p style="margin: 6px 0 4px;"><strong>${data.authorName || "Student"}:</strong> ${data.message || ""}</p>
+              <span class="muted" style="font-size: 0.8rem;">${data.dateLabel || ""}</span>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="button primary reply-comment-btn" data-resid="${data.resourceId}" data-restitle="${data.resourceTitle || "Resource"}" style="padding: 6px 12px;">Reply</button>
+              <button class="button secondary delete-btn" data-coll="resource_comments" data-id="${docSnap.id}" style="background: #ef4444; color: white; padding: 6px 12px;">Delete</button>
+            </div>
+          </div>
+        `;
+        commentContainer.appendChild(div);
+      });
+    }
+
+    // 2. Load Resources
     const resContainer = byId("admin-resource-list");
     if (resContainer) {
       const resSnap = await getDocs(collection(db, "resources"));
@@ -55,6 +83,7 @@ async function loadAdminContent() {
       });
     }
 
+    // 3. Load Blog Posts
     const blogContainer = byId("admin-blog-list");
     if (blogContainer) {
       const blogSnap = await getDocs(collection(db, "blogs"));
@@ -74,18 +103,20 @@ async function loadAdminContent() {
       });
     }
 
+    // 4. Load Live Classes & Office Hours
     const classContainer = byId("admin-class-list");
     if (classContainer) {
       const classSnap = await getDocs(collection(db, "classes"));
-      classContainer.innerHTML = classSnap.empty ? "<p class='muted'>No live classes found.</p>" : "";
+      classContainer.innerHTML = classSnap.empty ? "<p class='muted'>No live classes or office hours found.</p>" : "";
       classSnap.forEach((docSnap) => {
         const data = docSnap.data();
+        const typeLabel = data.sessionType === "office-hours" ? "Office Hours" : "Live Lecture";
         const div = document.createElement("div");
         div.className = "card";
         div.style.marginBottom = "10px";
         div.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div><strong>${data.title || "Untitled"}</strong> <span class="muted">(${data.time || ""})</span></div>
+            <div><strong>${data.title || "Untitled"}</strong> <span class="muted">[${typeLabel}] (${data.time || ""})</span></div>
             <button class="button secondary delete-btn" data-coll="classes" data-id="${docSnap.id}" style="background: #ef4444; color: white; padding: 6px 12px;">Delete</button>
           </div>
         `;
@@ -93,6 +124,7 @@ async function loadAdminContent() {
       });
     }
 
+    // 5. Load Notifications
     const notifContainer = byId("admin-notif-list");
     if (notifContainer) {
       const notifSnap = await getDocs(collection(db, "notifications"));
@@ -112,19 +144,52 @@ async function loadAdminContent() {
       });
     }
 
+    // Quick-reply handler for student questions
+    document.querySelectorAll(".reply-comment-btn").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        const resourceId = e.target.dataset.resid;
+        const resourceTitle = e.target.dataset.restitle;
+        const replyText = prompt(`Type your instructor reply for "${resourceTitle}":`);
+        if (!replyText || !replyText.trim()) return;
+
+        try {
+          await addDoc(collection(db, "resource_comments"), {
+            resourceId,
+            resourceTitle,
+            authorEmail: auth.currentUser.email,
+            authorName: "Muhumuza Trevor (Instructor)",
+            isInstructor: true,
+            message: replyText.trim(),
+            dateLabel: new Date().toLocaleDateString("en-UG", {
+              month: "short",
+              day: "numeric",
+              year: "numeric"
+            }),
+            createdAt: Date.now()
+          });
+          alert("Reply posted to the resource thread!");
+          loadAdminContent();
+        } catch (err) {
+          console.error("Error replying:", err);
+          alert("Failed to post reply.");
+        }
+      });
+    });
+
+    // Delete handlers
     document.querySelectorAll(".delete-btn").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
         const collectionName = e.target.dataset.coll;
         const docId = e.target.dataset.id;
 
-        if (confirm("Are you sure you want to delete this post?")) {
+        if (confirm("Are you sure you want to delete this item?")) {
           try {
             await deleteDoc(doc(db, collectionName, docId));
-            alert("Post deleted successfully!");
+            alert("Deleted successfully!");
             loadAdminContent();
           } catch (err) {
             console.error("Error deleting document:", err);
-            alert("Failed to delete post.");
+            alert("Failed to delete item.");
           }
         }
       });
@@ -203,23 +268,25 @@ const classForm = byId("admin-class-form");
 if (classForm) {
   classForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    const sessionType = byId("class-type").value;
     const title = byId("class-title").value;
     const host = byId("class-host").value;
     const time = byId("class-time").value;
+    const notes = byId("class-notes").value;
     const link = byId("class-link").value;
 
     if (!title || !host || !link) return;
 
     try {
       await addDoc(collection(db, "classes"), {
-        title, host, time, link, createdAt: Date.now()
+        sessionType, title, host, time, notes: notes || "", link, createdAt: Date.now()
       });
       classForm.reset();
-      alert("Live class scheduled successfully!");
+      alert(sessionType === "office-hours" ? "Weekly Office Hours published!" : "Live class scheduled successfully!");
       loadAdminContent();
     } catch (error) {
       console.error("Error scheduling class:", error);
-      alert("Failed to schedule class.");
+      alert("Failed to schedule session.");
     }
   });
 }
