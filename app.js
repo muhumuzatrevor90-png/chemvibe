@@ -30,10 +30,11 @@ if (configured && auth) {
     const passwordSection = byId("password-section");
 
     if (user) {
+      const displayLabel = user.displayName ? `${user.displayName} (${user.email})` : user.email;
       if (adminLink) adminLink.hidden = false;
       if (profileAdminLink) profileAdminLink.hidden = false;
       if (signoutBtn) signoutBtn.hidden = false;
-      if (profileSummary) profileSummary.textContent = `Signed in as: ${user.email}`;
+      if (profileSummary) profileSummary.textContent = `Signed in as: ${displayLabel}`;
       if (passwordSection) passwordSection.hidden = false;
     } else {
       if (adminLink) adminLink.hidden = true;
@@ -272,8 +273,9 @@ function renderResources(list) {
       }
 
       const userEmail = auth.currentUser.email || "Student";
+      const studentName = auth.currentUser.displayName || userEmail.split("@")[0];
       const isInstructor = ADMIN_EMAILS.includes(userEmail.toLowerCase());
-      const authorName = isInstructor ? "Muhumuza Trevor (Instructor)" : userEmail.split("@")[0];
+      const authorName = isInstructor ? "Muhumuza Trevor (Instructor)" : studentName;
 
       const dateLabel = new Date().toLocaleDateString("en-UG", {
         month: "short", day: "numeric", year: "numeric"
