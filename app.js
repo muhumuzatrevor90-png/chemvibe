@@ -535,7 +535,6 @@ function renderAdminMessagesInbox(adminUser) {
         month: "short", day: "numeric", year: "numeric"
       });
 
-      // Mark unread student messages in this thread as read when replying
       const unreadMsgs = privateMessages.filter((m) => m.studentEmail === form.dataset.studentEmail && m.resourceId === form.dataset.resId && !m.readByAdmin);
       for (const m of unreadMsgs) {
         await updateDoc(doc(db, "private_messages", m.id), { readByAdmin: true });
