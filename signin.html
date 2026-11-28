@@ -3,105 +3,61 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In — ChemVibe</title>
+  <title>Portal Sign In — ChemVibe</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <header class="site-header">
-    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>ChemVibe</a>
-    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
-    <nav class="nav" id="main-nav">
-      <a href="index.html">Library</a>
-      <a href="blog.html">Blog</a>
-      <a href="classes.html">Live classes</a>
-      <a href="about-us.html">About Us</a>
-      <a href="notifications.html">Notifications <span id="notification-badge" class="badge" hidden>0</span></a>
-      <a href="profile.html">Profile</a>
-      <a href="admin.html" id="nav-admin" hidden>Admin</a>
-      <a class="nav-button active" href="signin.html">Sign in</a>
-    </nav>
-  </header>
+<body class="portal-body">
 
-  <main class="container">
-    <section class="page-hero">
-      <span class="eyebrow">WELCOME BACK</span>
-      <h1>Sign in to ChemVibe.</h1>
-      <p>Access your study resources, saved bookmarks, and live classes.</p>
-    </section>
+  <div class="portal-container">
+    <!-- Left Branding & Insight Panel -->
+    <div class="portal-brand-side">
+      <div class="brand-header">
+        <span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>
+        <span class="portal-brand-title">CHEMVIBE LMS</span>
+      </div>
 
-    <div class="panel form-panel" style="max-width: 480px; margin: 0 auto;">
-      <h2>Sign in</h2>
-      <p class="muted">Enter your account details.</p>
+      <div class="portal-hero-content">
+        <h1>Innovative Chemistry <span class="highlight-text">Insights In Action</span></h1>
+        <p>Welcome to the ultimate academic portal. Access structured notes, live classes, private Q&A discussions, and advanced resource libraries seamlessly.</p>
+      </div>
 
-      <form id="signin-form" style="margin-top: 20px;">
-        <label class="field-label">Email
-          <input class="field" id="signin-email" type="email" autocomplete="email" required placeholder="student@example.com">
-        </label>
-        
-        <label class="field-label">Password
-          <div style="position: relative;">
-            <input class="field" id="signin-password" type="password" autocomplete="current-password" required placeholder="••••••••" style="padding-right: 45px; width: 100%;">
-            <button type="button" id="toggle-signin-password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; color: #64748b;" title="Show Password">
-              <!-- Professional Minimalist Eye Icon (SVG) -->
-              <svg id="signin-eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-            </button>
+      <div class="portal-footer-text">
+        &copy; 2026 ChemVibe Student Platform. All rights reserved. Developed by Muhumuza Trevor Mbabazi & Dr. Ruth Mbabazi.
+      </div>
+    </div>
+
+    <!-- Right Sign-In Card Panel -->
+    <div class="portal-form-side">
+      <div class="portal-card">
+        <h2>🔓 Portal Sign In</h2>
+        <p class="muted" style="margin-bottom: 20px; font-size: 0.9rem;">Sign in to unlock all ChemVibe pages and resources.</p>
+
+        <form id="signin-form">
+          <label class="field-label">Email Address / Username
+            <input class="field" id="signin-email" type="email" autocomplete="email" required placeholder="student@example.com">
+          </label>
+
+          <label class="field-label">Password
+            <div style="position: relative;">
+              <input class="field" id="signin-password" type="password" autocomplete="current-password" required placeholder="••••••••" style="padding-right: 40px;">
+            </div>
+          </label>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin: 14px 0; font-size: 0.88rem;">
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: #475569;">
+              <input type="checkbox" id="remember-me"> Remember Me
+            </label>
+            <a href="signup.html" class="text-link" style="font-size: 0.85rem;">Create account</a>
           </div>
-        </label>
 
-        <button class="button primary" type="submit" style="width: 100%; margin-top: 10px;">Sign in</button>
-      </form>
+          <button class="button primary" type="submit" style="width: 100%; padding: 12px; font-size: 1rem;">Sign In</button>
+        </form>
 
-      <p class="muted" style="margin-top: 16px; font-size: 0.9rem; text-align: center;">
-        Don't have an account? <a href="signup.html">Create account</a>
-      </p>
-      <p style="margin-top: 8px; font-size: 0.9rem; text-align: center;">
-        <a href="index.html">← Back to library</a>
-      </p>
-      <p id="signin-status" class="muted" style="margin-top: 10px; text-align: center; color: #ef4444;"></p>
-    </div>
-  </main>
-
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-col">
-        <h3>Contact Information</h3>
-        <p>ChemVibe Platform</p>
-        <p>Kampala, Uganda</p>
-        <p style="margin-top: 10px;">Contact Creator: 0773428340</p>
-        <p>Contact Specialist: 0777509629</p>
-      </div>
-      <div class="footer-col">
-        <h3>Quick Links</h3>
-        <ul>
-          <li><a href="index.html">Library</a></li>
-          <li><a href="blog.html">Blog Articles</a></li>
-          <li><a href="classes.html">Live Classes</a></li>
-          <li><a href="notifications.html">Notifications</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h3>About ChemVibe</h3>
-        <ul>
-          <li><a href="about-us.html">Platform Overview</a></li>
-          <li><a href="about-us.html">Meet the Team</a></li>
-          <li><a href="profile.html">Student Profile</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h3>Admin Access</h3>
-        <ul>
-          <li><a href="admin.html">Admin Workspace</a></li>
-          <li><a href="signin.html">Sign In</a></li>
-        </ul>
+        <p id="signin-status" class="muted" style="margin-top: 14px; text-align: center; color: #ef4444; font-size: 0.88rem;"></p>
       </div>
     </div>
-    <div class="footer-bottom">
-      &copy; 2026 ChemVibe Student Platform. All rights reserved. Developed by Muhumuza Trevor Mbabazi & Dr. Ruth Mbabazi.
-    </div>
-  </footer>
+  </div>
+
   <script type="module" src="signin.js"></script>
 </body>
 </html>
