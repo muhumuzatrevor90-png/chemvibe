@@ -4,10 +4,14 @@ import {
 } from "./firebase.js";
 import { 
   collection, 
-  getDocs 
+  getDocs,
+  addDoc,
+  query,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const byId = (id) => document.getElementById(id);
+const ADMIN_EMAILS = ["muhumuzatrevormbabazi@gmail.com"];
 
 // --- Mobile Navigation Toggle ---
 const menuToggle = byId("menu-toggle");
@@ -93,13 +97,29 @@ if (passwordForm) {
 let resources = [];
 let blogPosts = [];
 let liveClasses = [];
+let resourceComments = {}; // Grouped by resourceId
 
 // --- Fetch Data from Firestore ---
 async function loadDataFromFirestore() {
   if (!configured || !db) return;
 
   try {
-    // 1. Fetch Resources
+    // 1. Fetch Resource Comments
+    const commentsSnapshot = await getDocs(collection(db, "resource_comments"));
+    resourceComments = {};
+    commentsSnapshot.forEach((doc) => {
+      const data = { id: doc.id, ...doc.data() };
+      if (!resourceComments[data.resourceId]) {
+        resourceComments[data.resourceId] = [];
+      }
+      resourceComments[data.resourceId].push(data);
+    });
+    // Sort comments chronologically per resource
+    Object.keys(resourceComments).forEach((resId) => {
+      resourceComments[resId].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    });
+
+    // 2. Fetch Resources
     const resSnapshot = await getDocs(collection(db, "resources"));
     resources = [];
     resSnapshot.forEach((doc) => {
@@ -108,7 +128,7 @@ async function loadDataFromFirestore() {
     renderResources(resources);
     renderBookmarks();
 
-    // 2. Fetch Blog Posts
+    // 3. Fetch Blog Posts
     const blogSnapshot = await getDocs(collection(db, "blogs"));
     blogPosts = [];
     blogSnapshot.forEach((doc) => {
@@ -116,7 +136,7 @@ async function loadDataFromFirestore() {
     });
     renderBlog();
 
-    // 3. Fetch Live Classes
+    // 4. Fetch Live Classes
     const classSnapshot = await getDocs(collection(db, "classes"));
     liveClasses = [];
     classSnapshot.forEach((doc) => {
@@ -129,7 +149,16 @@ async function loadDataFromFirestore() {
   }
 }
 
-// --- Library Rendering with Payment Gateway Routing ---
+// --- Helper: Escape HTML to prevent XSS in student comments ---
+function escapeHTML(str) {
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// --- Library Rendering with Payment Gateway Routing & Discussion Threads ---
 function renderResources(list) {
   const container = byId("resource-list");
   const emptyState = byId("resource-empty");
@@ -151,32 +180,65 @@ function renderResources(list) {
     const isBookmarked = bookmarks.includes(res.id);
     const isFree = !res.price || res.price.toLowerCase() === "free";
     const actionUrl = isFree ? res.link : (res.paymentLink || "#");
+    const comments = resourceComments[res.id] || [];
+
+    const commentsHtml = comments.length === 0
+      ? `<p class="muted" style="font-size: 0.85rem; margin: 6px 0;">No questions yet. Need clarification on a topic or page? Ask below!</p>`
+      : comments.map((c) => `
+          <div style="background: ${c.isInstructor ? '#eff6ff' : '#f8fafc'}; border-left: 3px solid ${c.isInstructor ? '#0284c7' : '#cbd5e1'}; padding: 8px 10px; border-radius: 6px; margin-bottom: 8px; font-size: 0.88rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+              <strong style="color: #0f172a;">
+                ${escapeHTML(c.authorName)}
+                ${c.isInstructor ? `<span style="background: #0284c7; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">Instructor</span>` : ""}
+              </strong>
+              <span class="muted" style="font-size: 0.75rem;">${escapeHTML(c.dateLabel || "")}</span>
+            </div>
+            <p style="margin: 0; color: #334155;">${escapeHTML(c.message)}</p>
+          </div>
+        `).join("");
 
     const card = document.createElement("div");
     card.className = "card resource-card";
     card.innerHTML = `
       <div>
         <div class="card-meta">
-          <span class="tag">${res.category || "Notes"}</span>
-          <span class="price">${res.price || "Free"}</span>
+          <span class="tag">${escapeHTML(res.category || "Notes")}</span>
+          <span class="price">${escapeHTML(res.price || "Free")}</span>
         </div>
-        <h3>${res.title}</h3>
-        <p>${res.description}</p>
+        <h3>${escapeHTML(res.title)}</h3>
+        <p>${escapeHTML(res.description)}</p>
       </div>
-      <div style="display: flex; gap: 10px; margin-top: 12px;">
+
+      <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
         ${
           isFree 
             ? `<a class="button primary" href="${actionUrl}" target="_blank" style="flex: 1;">View resource</a>`
-            : `<a class="button primary" href="${actionUrl}" target="_blank" style="flex: 1; background-color: #059669;">Buy Now (${res.price})</a>`
+            : `<a class="button primary" href="${actionUrl}" target="_blank" style="flex: 1; background-color: #059669;">Buy Now (${escapeHTML(res.price)})</a>`
         }
         <button class="button secondary bookmark-btn" data-id="${res.id}" style="background: ${isBookmarked ? '#0284c7' : '#e2e8f0'}; color: ${isBookmarked ? 'white' : '#1e293b'};">
           ${isBookmarked ? '★ Saved' : '☆ Save'}
         </button>
+        <button class="button secondary toggle-discussion-btn" data-id="${res.id}" style="background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1;">
+          💬 Q&A (${comments.length})
+        </button>
+      </div>
+
+      <!-- Expandable Topic Discussion Thread -->
+      <div id="discussion-${res.id}" hidden style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+        <h4 style="font-size: 0.92rem; margin-bottom: 8px; color: #0f172a;">Need Clarification? Discussion</h4>
+        <div id="comments-list-${res.id}" style="max-height: 220px; overflow-y: auto; margin-bottom: 10px;">
+          ${commentsHtml}
+        </div>
+        <form class="resource-comment-form" data-id="${res.id}" data-title="${escapeHTML(res.title)}" style="display: flex; gap: 6px;">
+          <input class="field" type="text" required placeholder="Ask a question about these notes..." style="flex: 1; padding: 8px 10px; font-size: 0.88rem;">
+          <button class="button primary" type="submit" style="padding: 8px 14px; font-size: 0.85rem;">Post</button>
+        </form>
       </div>
     `;
     container.appendChild(card);
   });
 
+  // Bookmark click handlers
   document.querySelectorAll(".bookmark-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const resId = e.target.dataset.id;
@@ -191,6 +253,75 @@ function renderResources(list) {
       localStorage.setItem("chemvibe_bookmarks", JSON.stringify(currentBookmarks));
       filterAndRenderResources();
       renderBookmarks();
+    });
+  });
+
+  // Toggle discussion thread visibility
+  document.querySelectorAll(".toggle-discussion-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const resId = e.target.dataset.id;
+      const box = byId(`discussion-${resId}`);
+      if (box) box.hidden = !box.hidden;
+    });
+  });
+
+  // Submit new comment / clarification question
+  document.querySelectorAll(".resource-comment-form").forEach((form) => {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const resId = form.dataset.id;
+      const resTitle = form.dataset.title;
+      const input = form.querySelector("input");
+      const message = input.value.trim();
+      if (!message) return;
+
+      if (!configured || !auth || !auth.currentUser) {
+        alert("Please sign in to post a question or reply in the discussion thread.");
+        window.location.href = "signin.html";
+        return;
+      }
+
+      const userEmail = auth.currentUser.email || "Student";
+      const isInstructor = ADMIN_EMAILS.includes(userEmail.toLowerCase());
+      const authorName = isInstructor
+        ? "Muhumuza Trevor (Instructor)"
+        : userEmail.split("@")[0];
+
+      const dateLabel = new Date().toLocaleDateString("en-UG", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      });
+
+      const submitBtn = form.querySelector("button");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "...";
+
+      try {
+        const newComment = {
+          resourceId: resId,
+          resourceTitle: resTitle,
+          authorEmail: userEmail,
+          authorName,
+          isInstructor,
+          message,
+          dateLabel,
+          createdAt: Date.now()
+        };
+
+        const docRef = await addDoc(collection(db, "resource_comments"), newComment);
+        if (!resourceComments[resId]) resourceComments[resId] = [];
+        resourceComments[resId].push({ id: docRef.id, ...newComment });
+
+        filterAndRenderResources();
+        const reopenedBox = byId(`discussion-${resId}`);
+        if (reopenedBox) reopenedBox.hidden = false;
+      } catch (err) {
+        console.error("Error posting comment:", err);
+        alert("Could not post your comment. Please try again.");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Post";
+      }
     });
   });
 }
@@ -213,165 +344,9 @@ function renderBookmarks() {
   if (emptyState) emptyState.hidden = true;
 
   savedResources.forEach((res) => {
+    const isFree = !res.price || res.price.toLowerCase() === "free";
+    const actionUrl = isFree ? res.link : (res.paymentLink || "#");
     const card = document.createElement("div");
     card.className = "card";
     card.style.marginBottom = "12px";
-    card.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <span class="tag">${res.category || "Notes"}</span>
-          <h3 style="margin-top: 4px;">${res.title}</h3>
-        </div>
-        <a class="button primary" href="${res.link}" target="_blank" style="padding: 8px 14px;">View</a>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-}
-
-const searchInput = byId("resource-search");
-const filterChips = document.querySelectorAll("#resource-filters .chip");
-
-function filterAndRenderResources() {
-  const queryText = searchInput ? searchInput.value.toLowerCase() : "";
-  const activeChip = document.querySelector("#resource-filters .chip.active");
-  const selectedType = activeChip ? activeChip.dataset.type : "all";
-
-  const filtered = resources.filter((res) => {
-    const matchesQuery = (res.title && res.title.toLowerCase().includes(queryText)) || 
-                         (res.description && res.description.toLowerCase().includes(queryText));
-    const matchesType = selectedType === "all" || (res.category && res.category.toLowerCase() === selectedType.toLowerCase());
-    return matchesQuery && matchesType;
-  });
-
-  renderResources(filtered);
-}
-
-if (searchInput) {
-  searchInput.addEventListener("input", filterAndRenderResources);
-}
-
-filterChips.forEach((chip) => {
-  chip.addEventListener("click", () => {
-    filterChips.forEach((c) => c.classList.remove("active"));
-    chip.classList.add("active");
-    filterAndRenderResources();
-  });
-});
-
-// --- Blog Rendering ---
-function renderBlog() {
-  const container = byId("blog-list");
-  const emptyState = byId("blog-empty");
-  if (!container) return;
-
-  container.innerHTML = "";
-  if (blogPosts.length === 0) {
-    if (emptyState) emptyState.hidden = false;
-    return;
-  }
-  if (emptyState) emptyState.hidden = true;
-
-  blogPosts.forEach((post) => {
-    const card = document.createElement("div");
-    card.className = "card blog-card";
-    card.innerHTML = `
-      <span class="muted">${post.date || ""}</span>
-      <h3>${post.title}</h3>
-      <p>${post.summary}</p>
-      ${post.link && post.link !== "#" ? `<a class="text-link" href="${post.link}" target="_blank">Read article / View file →</a>` : ""}
-    `;
-    container.appendChild(card);
-  });
-}
-
-// --- Live Classes Rendering ---
-function renderClasses() {
-  const container = byId("classes-list");
-  const emptyState = byId("classes-empty");
-  if (!container) return;
-
-  container.innerHTML = "";
-  if (liveClasses.length === 0) {
-    if (emptyState) emptyState.hidden = false;
-    return;
-  }
-  if (emptyState) emptyState.hidden = true;
-
-  liveClasses.forEach((cls) => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <div>
-        <span class="tag">Live Session</span>
-        <h3>${cls.title}</h3>
-        <p><strong>Host:</strong> ${cls.host}</p>
-        <p><strong>Time:</strong> ${cls.time}</p>
-      </div>
-      <a class="button primary" href="${cls.link}" target="_blank" style="margin-top: 10px;">Join session</a>
-    `;
-    container.appendChild(card);
-  });
-}
-
-// --- Notifications Rendering & Unread Badge Counter ---
-async function loadNotificationsFromFirestore() {
-  const container = byId("notifications-list");
-  const emptyState = byId("notifications-empty");
-  const badge = byId("notification-badge");
-
-  if (!configured || !db) return;
-
-  try {
-    const snap = await getDocs(collection(db, "notifications"));
-    let notifications = [];
-    snap.forEach((doc) => {
-      notifications.push({ id: doc.id, ...doc.data() });
-    });
-
-    const totalCount = notifications.length;
-    const isNotificationsPage = window.location.pathname.includes("notifications.html");
-
-    if (isNotificationsPage) {
-      localStorage.setItem("chemvibe_last_read_count", totalCount);
-      if (badge) badge.hidden = true;
-    } else {
-      const lastReadCount = parseInt(localStorage.getItem("chemvibe_last_read_count") || "0", 10);
-      const unreadCount = totalCount - lastReadCount;
-
-      if (badge) {
-        if (unreadCount > 0) {
-          badge.textContent = unreadCount;
-          badge.hidden = false;
-        } else {
-          badge.hidden = true;
-        }
-      }
-    }
-
-    if (container) {
-      container.innerHTML = "";
-      if (notifications.length === 0) {
-        if (emptyState) emptyState.hidden = false;
-        return;
-      }
-      if (emptyState) emptyState.hidden = true;
-
-      notifications.forEach((notif) => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <span class="tag">${notif.date || "Announcement"}</span>
-          <h3>${notif.title}</h3>
-          <p>${notif.message}</p>
-        `;
-        container.appendChild(card);
-      });
-    }
-  } catch (error) {
-    console.error("Error loading notifications:", error);
-  }
-}
-
-loadDataFromFirestore();
-loadNotificationsFromFirestore();
+    card.innerHTML
