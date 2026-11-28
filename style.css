@@ -608,3 +608,121 @@ body {
     font-size: 2.2rem;
   }
 }
+/* --- Split-Screen Portal Sign-In Styles --- */
+.portal-body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: #0b1120;
+  display: flex;
+  flex-direction: column;
+}
+
+.portal-container {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.portal-brand-side {
+  background: linear-gradient(135deg, #090d16 0%, #0f172a 100%);
+  color: #ffffff;
+  padding: 4rem 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid #1e293b;
+}
+
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.portal-hero-content h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.portal-hero-content .highlight-text {
+  color: #38bdf8;
+  display: block;
+}
+
+.portal-hero-content p {
+  color: #94a3b8;
+  font-size: 1.05rem;
+  max-width: 520px;
+  line-height: 1.6;
+}
+
+.portal-footer-text {
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.portal-form-side {
+  background-color: #0b1120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.portal-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+}
+
+.portal-card h2 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.portal-card .field-label {
+  color: #cbd5e1;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.portal-card .field {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.portal-card .field:focus {
+  border-color: #0284c7;
+  background-color: #0f172a;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+}
+
+@media (max-width: 900px) {
+  .portal-container {
+    grid-template-columns: 1fr;
+  }
+  .portal-brand-side {
+    padding: 2.5rem 2rem;
+  }
+  .portal-hero-content h1 {
+    font-size: 2.2rem;
+  }
+}
