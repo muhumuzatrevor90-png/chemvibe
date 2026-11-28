@@ -14,11 +14,11 @@
       <a class="active" href="index.html">Library</a>
       <a href="blog.html">Blog</a>
       <a href="classes.html">Live classes</a>
-      <a href="about-us.html">About Us</a>
       <a href="notifications.html">Notifications <span id="notification-badge" class="badge" hidden>0</span></a>
+      <a href="messages.html" id="nav-messages" hidden>Messages <span id="messages-badge" class="badge" hidden>0</span></a>
       <a href="profile.html">Profile</a>
       <a href="admin.html" id="nav-admin" hidden>Admin</a>
-      <a class="nav-button" href="signin.html">Sign in</a>
+      <a class="nav-button" href="signin.html" id="nav-signin-out">Sign in</a>
     </nav>
   </header>
 
@@ -27,29 +27,38 @@
       <span class="eyebrow">STUDENT LIBRARY</span>
       <h1>Chemistry Resources & Notes</h1>
       <p>Access notes, past papers, practice questions, and guides for your chemistry studies.</p>
+      <p id="welcome-banner" style="color: #38bdf8; font-weight: 600; margin-top: 8px;" hidden></p>
     </section>
 
-    <section class="panel">
-      <input class="field" id="resource-search" type="search" placeholder="Search notes, past papers, or topics...">
-      <div id="resource-filters" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
-        <button class="button secondary chip active" data-type="all">All</button>
-        <button class="button secondary chip" data-type="Notes">Notes</button>
-        <button class="button secondary chip" data-type="Practice">Practice</button>
-        <button class="button secondary chip" data-type="Past paper">Past papers</button>
-        <button class="button secondary chip" data-type="Guide">Guides</button>
+    <div class="panel">
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;">
+        <input class="field" id="resource-search" type="search" placeholder="Search notes, past papers, or topics..." style="flex: 1; margin-top: 0;">
       </div>
-    </section>
+      <div class="chip-group" id="resource-filters" style="margin-bottom: 0;">
+        <button class="chip active" data-type="all">All</button>
+        <button class="chip" data-type="Notes">Notes</button>
+        <button class="chip" data-type="Practice">Practice</button>
+        <button class="chip" data-type="Past Papers">Past Papers</button>
+        <button class="chip" data-type="Guides">Guides</button>
+      </div>
+    </div>
 
-    <section class="panel">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <div class="panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
         <h2>Available Resources</h2>
         <span class="muted" id="resource-count">0 resources</span>
       </div>
       <div id="resource-list"></div>
-      <div id="resource-empty" hidden style="text-align: center; padding: 20px;">
-        <p class="muted">No resources found matching your search or filters.</p>
+      <div id="resource-empty" class="panel" style="text-align: center; border: none; box-shadow: none;" hidden>
+        <p class="muted">No resources found matching your search.</p>
       </div>
-    </section>
+    </div>
+
+    <div class="panel" style="margin-top: 24px;">
+      <h2>Saved Bookmarks</h2>
+      <div id="bookmarked-list" style="margin-top: 12px;"></div>
+      <p id="bookmarked-empty" class="muted">No bookmarked resources yet. Click 'Save' on any resource card.</p>
+    </div>
   </main>
 
   <footer class="footer">
