@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instructor Messages — ChemVibe</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>ChemVibe</a>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+    <nav class="nav" id="main-nav">
+      <a href="index.html">Library</a>
+      <a href="blog.html">Blog</a>
+      <a href="classes.html">Live classes</a>
+      <a href="notifications.html">Notifications <span id="notification-badge" class="badge" hidden>0</span></a>
+      <a class="active" href="messages.html" id="nav-messages">Messages <span id="messages-badge" class="badge" hidden>0</span></a>
+      <a href="profile.html">Profile</a>
+      <a href="admin.html" id="nav-admin">Admin</a>
+      <a class="nav-button" href="signin.html" id="nav-signin-out">Sign out</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="page-hero">
+      <span class="eyebrow">ADMIN INBOX</span>
+      <h1>Student Private Messages</h1>
+      <p>View and reply privately to individual student questions. Other students cannot see these threads.</p>
+    </section>
+
+    <div id="admin-messages-container"></div>
+    <div class="panel" id="admin-messages-empty" hidden>
+      <p class="muted">No student messages yet.</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-bottom">
+      &copy; 2026 ChemVibe Student Platform. All rights reserved. Developed by Muhumuza Trevor Mbabazi & Dr. Ruth Mbabazi.
+    </div>
+  </footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
