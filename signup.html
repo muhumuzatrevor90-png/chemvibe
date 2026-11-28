@@ -37,9 +37,14 @@
         <label class="field-label">Email
           <input class="field" id="signup-email" type="email" required placeholder="student@example.com">
         </label>
+        
         <label class="field-label">Password (min. 6 characters)
-          <input class="field" id="signup-password" type="password" required placeholder="••••••••">
+          <div style="position: relative;">
+            <input class="field" id="signup-password" type="password" required placeholder="••••••••" style="padding-right: 45px; width: 100%;">
+            <button type="button" id="toggle-password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.1rem;" title="Show Password">👁️</button>
+          </div>
         </label>
+
         <button class="button primary" type="submit" style="width: 100%; margin-top: 10px;">Create account</button>
       </form>
 
@@ -94,9 +99,3 @@
   <script type="module" src="signup.js"></script>
 </body>
 </html>
-```[cite: 5]
-
-### What Was Fixed:
-1. **Added `.panel form-panel`**: Wrapped the form inside a neat card layout with proper background and padding, matching your other authentication and workspace pages.
-2. **Centered Container**: Constrained the width to `480px` and centered it so the page looks balanced instead of spreading edge-to-edge.
-3. **Linked `signup.js`**: Ensured the form connects properly to your authentication script[cite: 5].
