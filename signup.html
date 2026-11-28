@@ -6,49 +6,97 @@
   <title>Create Account — ChemVibe</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="auth-page">
-  <div class="auth-layout">
-    <div class="auth-intro">
-      <div>
-        <a class="brand brand-light" href="index.html">
-          <span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>ChemVibe
-        </a>
-        <span class="eyebrow" style="margin-top: 24px;">YOUR CHEMISTRY STUDY SPACE</span>
-      </div>
-      <div>
-        <h1>Join <span>ChemVibe</span> today.</h1>
-        <p>Create your student account to access premium resources, live classes, and personal notes.</p>
-      </div>
-      <small>© ChemVibe Study Platform</small>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true"><span></span><i></i><b></b></span>ChemVibe</a>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+    <nav class="nav" id="main-nav">
+      <a href="index.html">Library</a>
+      <a href="blog.html">Blog</a>
+      <a href="classes.html">Live classes</a>
+      <a href="about-us.html">About Us</a>
+      <a href="notifications.html">Notifications <span id="notification-badge" class="badge" hidden>0</span></a>
+      <a href="profile.html">Profile</a>
+      <a href="admin.html" id="nav-admin" hidden>Admin</a>
+      <a class="nav-button" href="signin.html">Sign in</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="page-hero">
+      <span class="eyebrow">YOUR CHEMISTRY STUDY SPACE</span>
+      <h1>Join ChemVibe today.</h1>
+      <p>Create your student account to access premium resources, live classes, and personal notes.</p>
+    </section>
+
+    <div class="panel form-panel" style="max-width: 480px; margin: 0 auto;">
+      <h2>Create account</h2>
+      <p class="muted">Fill in your details to get started.</p>
+
+      <form id="signup-form" style="margin-top: 20px;">
+        <label class="field-label">Email
+          <input class="field" id="signup-email" type="email" required placeholder="student@example.com">
+        </label>
+        <label class="field-label">Password (min. 6 characters)
+          <input class="field" id="signup-password" type="password" required placeholder="••••••••">
+        </label>
+        <button class="button primary" type="submit" style="width: 100%; margin-top: 10px;">Create account</button>
+      </form>
+
+      <p class="muted" style="margin-top: 16px; font-size: 0.9rem; text-align: center;">
+        Already have an account? <a href="signin.html">Sign in</a>
+      </p>
+      <p style="margin-top: 8px; font-size: 0.9rem; text-align: center;">
+        <a href="index.html">← Back to library</a>
+      </p>
+      <p id="signup-status" class="muted" style="margin-top: 10px; text-align: center; color: #ef4444;"></p>
     </div>
+  </main>
 
-    <div class="auth-side">
-      <div class="auth-card">
-        <h2>Create account</h2>
-        <p class="muted">Fill in your details to get started.</p>
-        
-        <form id="signup-form">
-          <label class="field-label">Email
-            <input class="field" id="signup-email" type="email" required placeholder="student@university.edu">
-          </label>
-          
-          <label class="field-label">Password (min. 6 characters)
-            <div style="position: relative;">
-              <input class="field" id="signup-password" type="password" required placeholder="••••••••" style="padding-right: 44px; width: 100%;">
-              <button type="button" id="toggle-signup-password" aria-label="Toggle password visibility" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.1rem; color: var(--muted);">👁️</button>
-            </div>
-          </label>
-
-          <button class="button primary full" type="submit" id="signup-submit" style="margin-top: 8px;">Create account</button>
-          <p class="status" id="signup-status" role="status" aria-live="polite"></p>
-        </form>
-
-        <p class="auth-foot">Already have an account? <a href="signin.html">Sign in</a></p>
-        <a class="back-link" href="index.html">← Back to library</a>
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <h3>Contact Information</h3>
+        <p>ChemVibe Platform</p>
+        <p>Kampala, Uganda</p>
+        <p style="margin-top: 10px;">Contact Creator: 0773428340</p>
+        <p>Contact Specialist: 0777509629</p>
+      </div>
+      <div class="footer-col">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="index.html">Library</a></li>
+          <li><a href="blog.html">Blog Articles</a></li>
+          <li><a href="classes.html">Live Classes</a></li>
+          <li><a href="notifications.html">Notifications</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>About ChemVibe</h3>
+        <ul>
+          <li><a href="about-us.html">Platform Overview</a></li>
+          <li><a href="about-us.html">Meet the Team</a></li>
+          <li><a href="profile.html">Student Profile</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>Admin Access</h3>
+        <ul>
+          <li><a href="admin.html">Admin Workspace</a></li>
+          <li><a href="signin.html">Sign In</a></li>
+        </ul>
       </div>
     </div>
-  </div>
-
-  <script type="module" src="auth-signup.js"></script>
+    <div class="footer-bottom">
+      &copy; 2026 ChemVibe Student Platform. All rights reserved. Developed by Muhumuza Trevor Mbabazi & Dr. Ruth Mbabazi.
+    </div>
+  </footer>
+  <script type="module" src="signup.js"></script>
 </body>
 </html>
+```[cite: 5]
+
+### What Was Fixed:
+1. **Added `.panel form-panel`**: Wrapped the form inside a neat card layout with proper background and padding, matching your other authentication and workspace pages.
+2. **Centered Container**: Constrained the width to `480px` and centered it so the page looks balanced instead of spreading edge-to-edge.
+3. **Linked `signup.js`**: Ensured the form connects properly to your authentication script[cite: 5].
