@@ -277,6 +277,13 @@ body {
   border-radius: 6px;
 }
 
+.chip-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
 .chip {
   background-color: #f1f5f9 !important;
   color: #334155 !important;
@@ -285,6 +292,7 @@ body {
   border-radius: 999px !important;
   font-size: 0.86rem !important;
   font-weight: 600 !important;
+  cursor: pointer;
 }
 
 .chip:hover {
@@ -382,7 +390,7 @@ body {
   vertical-align: middle;
 }
 
-/* --- Multi-Column Professional Footer (Inspired by Mak style) --- */
+/* --- Multi-Column Professional Footer --- */
 .footer {
   background-color: #0f172a;
   color: #cbd5e1;
@@ -438,6 +446,7 @@ body {
   color: #64748b;
 }
 
+/* --- Responsive Mobile Navigation & Layout Rules --- */
 @media (max-width: 768px) {
   .site-header {
     padding: 12px 18px;
@@ -460,10 +469,11 @@ body {
     border-bottom: 1px solid #cbd5e1;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
     gap: 8px;
+    z-index: 999;
   }
 
   .nav.open {
-    display: flex;
+    display: flex !important;
   }
 
   .page-hero {
