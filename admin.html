@@ -26,7 +26,7 @@
     <section class="page-hero">
       <span class="eyebrow">ADMIN CONTROL</span>
       <h1>Admin Workspace</h1>
-      <p>Manage study documents, blog articles, live classes, and notifications.</p>
+      <p>Manage study documents, blog articles, live classes, office hours, and student discussions.</p>
     </section>
 
     <div class="panel" id="admin-auth-panel" style="text-align: center; padding: 40px;">
@@ -91,22 +91,31 @@
       </section>
 
       <section class="panel form-panel">
-        <h2>Schedule Live Class Session</h2>
-        <p class="muted">Set up interactive tutoring or Q&A sessions for students.</p>
+        <h2>Schedule Live Class or Weekly Office Hours</h2>
+        <p class="muted">Host structured lectures or open 30-minute Q&A office hours for student homework questions.</p>
         <form id="admin-class-form" style="margin-top: 20px;">
+          <label class="field-label">Session Type
+            <select class="field" id="class-type">
+              <option value="lecture">Live Lecture</option>
+              <option value="office-hours">Weekly Office Hours (Open Q&A Drop-In)</option>
+            </select>
+          </label>
           <label class="field-label">Session Title
-            <input class="field" id="class-title" type="text" required placeholder="e.g., Q&A Session: Organic Synthesis Pathways">
+            <input class="field" id="class-title" type="text" required placeholder="e.g., Weekly Chemistry Q&A Office Hours">
           </label>
           <label class="field-label">Host Name
-            <input class="field" id="class-host" type="text" required placeholder="e.g., Dr. Ruth Mbabazi">
+            <input class="field" id="class-host" type="text" required placeholder="e.g., Dr. Ruth Mbabazi & Muhumuza Trevor">
           </label>
           <label class="field-label">Time & Schedule
-            <input class="field" id="class-time" type="text" required placeholder="e.g., Tomorrow, 4:00 PM EAT">
+            <input class="field" id="class-time" type="text" required placeholder="e.g., Every Saturday, 4:00 PM – 4:30 PM EAT">
+          </label>
+          <label class="field-label">Topic Focus / Instructions (Optional)
+            <input class="field" id="class-notes" type="text" placeholder="e.g., Bring your organic synthesis or titration questions">
           </label>
           <label class="field-label">Meeting / Session Link
             <input class="field" id="class-link" type="url" required placeholder="https://meet.google.com/...">
           </label>
-          <button class="button primary" type="submit" style="margin-top: 10px;">Schedule Live Class</button>
+          <button class="button primary" type="submit" style="margin-top: 10px;">Publish Session</button>
         </form>
       </section>
 
@@ -128,16 +137,19 @@
       </section>
 
       <section class="panel form-panel">
-        <h2>Manage Published Content</h2>
-        <p class="muted">View and delete existing resources, blog articles, live classes, or notifications.</p>
+        <h2>Manage Published Content & Student Q&A</h2>
+        <p class="muted">View, reply to, or delete existing resources, blog articles, live classes, notifications, and student questions.</p>
         <div style="margin-top: 20px;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Student Resource Questions (Reply directly on Library or delete here)</h3>
+          <div id="admin-comment-list" style="margin-bottom: 24px;"></div>
+
           <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Resources</h3>
           <div id="admin-resource-list" style="margin-bottom: 24px;"></div>
 
           <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Blog Posts</h3>
           <div id="admin-blog-list" style="margin-bottom: 24px;"></div>
 
-          <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Live Classes</h3>
+          <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Live Classes & Office Hours</h3>
           <div id="admin-class-list" style="margin-bottom: 24px;"></div>
 
           <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Notifications</h3>
