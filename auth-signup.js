@@ -2,62 +2,56 @@ import { auth, configured, createUserWithEmailAndPassword } from "./firebase.js"
 
 const byId = (id) => document.getElementById(id);
 
-// Password visibility toggle
-const toggleBtn = byId("toggle-signup-password");
+const menuToggle = byId("menu-toggle");
+const mainNav = byId("main-nav");
+if (menuToggle && mainNav) {
+  menuToggle.addEventListener("click", () => {
+    mainNav.classList.toggle("open");
+  });
+}
+
+// --- Password Visibility Toggle ---
 const passwordInput = byId("signup-password");
-if (toggleBtn && passwordInput) {
+const toggleBtn = byId("toggle-password");
+
+if (passwordInput && toggleBtn) {
   toggleBtn.addEventListener("click", () => {
     if (passwordInput.type === "password") {
       passwordInput.type = "text";
       toggleBtn.textContent = "🙈";
+      toggleBtn.title = "Hide Password";
     } else {
       passwordInput.type = "password";
       toggleBtn.textContent = "👁️";
+      toggleBtn.title = "Show Password";
     }
   });
 }
 
-// Sign-up form submission
-const form = byId("signup-form");
-if (form) {
-  form.addEventListener("submit", async (e) => {
+// --- Account Creation Handling ---
+const signupForm = byId("signup-form");
+if (signupForm) {
+  signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = byId("signup-email").value.trim();
     const password = byId("signup-password").value;
     const status = byId("signup-status");
-    const submitBtn = byId("signup-submit");
 
     if (!configured || !auth) {
-      status.textContent = "Firebase is not configured correctly in firebase.js.";
+      status.textContent = "Firebase is not configured properly.";
       return;
     }
-
-    if (password.length < 6) {
-      status.textContent = "Password must be at least 6 characters long.";
-      return;
-    }
-
-    submitBtn.disabled = true;
-    status.textContent = "Creating account...";
 
     try {
+      status.textContent = "Creating account...";
       await createUserWithEmailAndPassword(auth, email, password);
       status.textContent = "Account created successfully! Redirecting...";
       setTimeout(() => {
-        window.location.href = "profile.html";
-      }, 800);
+        window.location.href = "index.html";
+      }, 1000);
     } catch (error) {
-      console.error("Sign-up error:", error);
-      if (error.code === "auth/email-already-in-use") {
-        status.textContent = "This email is already registered. Try signing in.";
-      } else if (error.code === "auth/invalid-email") {
-        status.textContent = "Please enter a valid email address.";
-      } else if (error.code === "auth/weak-password") {
-        status.textContent = "Password is too weak. Please choose a stronger password.";
-      } else {
-        status.textContent = `Sign-up failed: ${error.message}`;
-      }
-      submitBtn.disabled = false;
+      console.error("Signup error:", error);
+      status.textContent = `Error: ${error.message}`;
     }
   });
 }
