@@ -97,14 +97,13 @@ if (passwordForm) {
 let resources = [];
 let blogPosts = [];
 let liveClasses = [];
-let resourceComments = {}; // Grouped by resourceId
+let resourceComments = {}; 
 
 // --- Fetch Data from Firestore ---
 async function loadDataFromFirestore() {
   if (!configured || !db) return;
 
   try {
-    // 1. Fetch Resource Comments
     const commentsSnapshot = await getDocs(collection(db, "resource_comments"));
     resourceComments = {};
     commentsSnapshot.forEach((doc) => {
@@ -118,7 +117,6 @@ async function loadDataFromFirestore() {
       resourceComments[resId].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
     });
 
-    // 2. Fetch Resources
     const resSnapshot = await getDocs(collection(db, "resources"));
     resources = [];
     resSnapshot.forEach((doc) => {
@@ -127,7 +125,6 @@ async function loadDataFromFirestore() {
     renderResources(resources);
     renderBookmarks();
 
-    // 3. Fetch Blog Posts
     const blogSnapshot = await getDocs(collection(db, "blogs"));
     blogPosts = [];
     blogSnapshot.forEach((doc) => {
@@ -135,7 +132,6 @@ async function loadDataFromFirestore() {
     });
     renderBlog();
 
-    // 4. Fetch Live Classes
     const classSnapshot = await getDocs(collection(db, "classes"));
     liveClasses = [];
     classSnapshot.forEach((doc) => {
@@ -148,7 +144,7 @@ async function loadDataFromFirestore() {
   }
 }
 
-// --- Helper: Escape HTML safely without regex parsing issues ---
+// --- Helper: Escape HTML ---
 function escapeHTML(str) {
   return String(str || "")
     .split("&").join("&amp;")
@@ -158,7 +154,7 @@ function escapeHTML(str) {
     .split("'").join("&#039;");
 }
 
-// --- Library Rendering with Payment Gateway Routing & Discussion Threads ---
+// --- Library Rendering ---
 function renderResources(list) {
   const container = byId("resource-list");
   const emptyState = byId("resource-empty");
@@ -183,7 +179,7 @@ function renderResources(list) {
     const comments = resourceComments[res.id] || [];
 
     const commentsHtml = comments.length === 0
-      ? `<p class="muted" style="font-size: 0.85rem; margin: 6px 0;">No questions yet. Need clarification on a topic or page? Ask below!</p>`
+      ? `<p class="muted" style="font-size: 0.85rem; margin: 6px 0;">No questions yet. Ask below!</p>`
       : comments.map((c) => `
           <div style="background: ${c.isInstructor ? '#eff6ff' : '#f8fafc'}; border-left: 3px solid ${c.isInstructor ? '#0284c7' : '#cbd5e1'}; padding: 8px 10px; border-radius: 6px; margin-bottom: 8px; font-size: 0.88rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
@@ -223,14 +219,13 @@ function renderResources(list) {
         </button>
       </div>
 
-      <!-- Expandable Topic Discussion Thread -->
       <div id="discussion-${res.id}" hidden style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
         <h4 style="font-size: 0.92rem; margin-bottom: 8px; color: #0f172a;">Need Clarification? Discussion</h4>
         <div id="comments-list-${res.id}" style="max-height: 220px; overflow-y: auto; margin-bottom: 10px;">
           ${commentsHtml}
         </div>
         <form class="resource-comment-form" data-id="${res.id}" data-title="${escapeHTML(res.title)}" style="display: flex; gap: 6px;">
-          <input class="field" type="text" required placeholder="Ask a question about these notes..." style="flex: 1; padding: 8px 10px; font-size: 0.88rem;">
+          <input class="field" type="text" required placeholder="Ask a question..." style="flex: 1; padding: 8px 10px; font-size: 0.88rem;">
           <button class="button primary" type="submit" style="padding: 8px 14px; font-size: 0.85rem;">Post</button>
         </form>
       </div>
@@ -238,7 +233,6 @@ function renderResources(list) {
     container.appendChild(card);
   });
 
-  // Bookmark click handlers
   document.querySelectorAll(".bookmark-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const resId = e.target.dataset.id;
@@ -256,7 +250,6 @@ function renderResources(list) {
     });
   });
 
-  // Toggle discussion thread visibility
   document.querySelectorAll(".toggle-discussion-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const resId = e.target.dataset.id;
@@ -265,7 +258,6 @@ function renderResources(list) {
     });
   });
 
-  // Submit new comment / clarification question
   document.querySelectorAll(".resource-comment-form").forEach((form) => {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -276,21 +268,17 @@ function renderResources(list) {
       if (!message) return;
 
       if (!configured || !auth || !auth.currentUser) {
-        alert("Please sign in to post a question or reply in the discussion thread.");
+        alert("Please sign in to post a question.");
         window.location.href = "signin.html";
         return;
       }
 
       const userEmail = auth.currentUser.email || "Student";
       const isInstructor = ADMIN_EMAILS.includes(userEmail.toLowerCase());
-      const authorName = isInstructor
-        ? "Muhumuza Trevor (Instructor)"
-        : userEmail.split("@")[0];
+      const authorName = isInstructor ? "Muhumuza Trevor (Instructor)" : userEmail.split("@")[0];
 
       const dateLabel = new Date().toLocaleDateString("en-UG", {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
+        month: "short", day: "numeric", year: "numeric"
       });
 
       const submitBtn = form.querySelector("button");
@@ -306,3 +294,212 @@ function renderResources(list) {
           isInstructor,
           message,
           dateLabel,
+          createdAt: Date.now()
+        };
+
+        const docRef = await addDoc(collection(db, "resource_comments"), newComment);
+        if (!resourceComments[resId]) resourceComments[resId] = [];
+        resourceComments[resId].push({ id: docRef.id, ...newComment });
+
+        filterAndRenderResources();
+        const reopenedBox = byId(`discussion-${resId}`);
+        if (reopenedBox) reopenedBox.hidden = false;
+      } catch (err) {
+        console.error("Error posting comment:", err);
+        alert("Could not post your comment.");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Post";
+      }
+    });
+  });
+}
+
+function renderBookmarks() {
+  const container = byId("bookmarked-list");
+  const emptyState = byId("bookmarked-empty");
+  if (!container) return;
+
+  const bookmarks = JSON.parse(localStorage.getItem("chemvibe_bookmarks") || "[]");
+  container.innerHTML = "";
+
+  const savedResources = resources.filter((res) => bookmarks.includes(res.id));
+
+  if (savedResources.length === 0) {
+    if (emptyState) emptyState.hidden = false;
+    return;
+  }
+  if (emptyState) emptyState.hidden = true;
+
+  savedResources.forEach((res) => {
+    const isFree = !res.price || res.price.toLowerCase() === "free";
+    const actionUrl = isFree ? res.link : (res.paymentLink || "#");
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.marginBottom = "12px";
+    card.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <span class="tag">${escapeHTML(res.category || "Notes")}</span>
+          <h3 style="margin-top: 4px;">${escapeHTML(res.title)}</h3>
+        </div>
+        <a class="button primary" href="${actionUrl}" target="_blank" style="padding: 8px 14px;">
+          ${isFree ? "View" : "Buy Now"}
+        </a>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+const searchInput = byId("resource-search");
+const filterChips = document.querySelectorAll("#resource-filters .chip");
+
+function filterAndRenderResources() {
+  const queryText = searchInput ? searchInput.value.toLowerCase() : "";
+  const activeChip = document.querySelector("#resource-filters .chip.active");
+  const selectedType = activeChip ? activeChip.dataset.type : "all";
+
+  const filtered = resources.filter((res) => {
+    const matchesQuery = (res.title && res.title.toLowerCase().includes(queryText)) || 
+                         (res.description && res.description.toLowerCase().includes(queryText));
+    const matchesType = selectedType === "all" || (res.category && res.category.toLowerCase() === selectedType.toLowerCase());
+    return matchesQuery && matchesType;
+  });
+
+  renderResources(filtered);
+}
+
+if (searchInput) {
+  searchInput.addEventListener("input", filterAndRenderResources);
+}
+
+filterChips.forEach((chip) => {
+  chip.addEventListener("click", () => {
+    filterChips.forEach((c) => c.classList.remove("active"));
+    chip.classList.add("active");
+    filterAndRenderResources();
+  });
+});
+
+function renderBlog() {
+  const container = byId("blog-list");
+  const emptyState = byId("blog-empty");
+  if (!container) return;
+
+  container.innerHTML = "";
+  if (blogPosts.length === 0) {
+    if (emptyState) emptyState.hidden = false;
+    return;
+  }
+  if (emptyState) emptyState.hidden = true;
+
+  blogPosts.forEach((post) => {
+    const card = document.createElement("div");
+    card.className = "card blog-card";
+    card.innerHTML = `
+      <span class="muted">${escapeHTML(post.date || "")}</span>
+      <h3>${escapeHTML(post.title)}</h3>
+      <p>${escapeHTML(post.summary)}</p>
+      ${post.link && post.link !== "#" ? `<a class="text-link" href="${post.link}" target="_blank">Read article →</a>` : ""}
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderClasses() {
+  const container = byId("classes-list");
+  const emptyState = byId("classes-empty");
+  if (!container) return;
+
+  container.innerHTML = "";
+  if (liveClasses.length === 0) {
+    if (emptyState) emptyState.hidden = false;
+    return;
+  }
+  if (emptyState) emptyState.hidden = true;
+
+  liveClasses.forEach((cls) => {
+    const isOfficeHours = cls.sessionType === "office-hours";
+    const card = document.createElement("div");
+    card.className = "card";
+    if (isOfficeHours) {
+      card.style.borderLeft = "4px solid #d97706";
+    }
+    card.innerHTML = `
+      <div>
+        <span class="tag" style="${isOfficeHours ? 'background: #fef3c7; color: #b45309;' : ''}">
+          ${isOfficeHours ? '🕒 Weekly Office Hours (Open Q&A)' : '🎓 Live Lecture'}
+        </span>
+        <h3 style="margin-top: 8px;">${escapeHTML(cls.title)}</h3>
+        <p><strong>Host:</strong> ${escapeHTML(cls.host)}</p>
+        <p><strong>Schedule:</strong> ${escapeHTML(cls.time)}</p>
+        ${cls.notes ? `<p class="muted" style="font-size: 0.9rem; margin-top: 4px;">${escapeHTML(cls.notes)}</p>` : ""}
+      </div>
+      <a class="button primary" href="${cls.link}" target="_blank" style="margin-top: 12px; ${isOfficeHours ? 'background-color: #d97706;' : ''}">
+        ${isOfficeHours ? 'Drop Into Office Hours' : 'Join Live Session'}
+      </a>
+    `;
+    container.appendChild(card);
+  });
+}
+
+async function loadNotificationsFromFirestore() {
+  const container = byId("notifications-list");
+  const emptyState = byId("notifications-empty");
+  const badge = byId("notification-badge");
+
+  if (!configured || !db) return;
+
+  try {
+    const snap = await getDocs(collection(db, "notifications"));
+    let notifications = [];
+    snap.forEach((doc) => {
+      notifications.push({ id: doc.id, ...doc.data() });
+    });
+
+    const totalCount = notifications.length;
+    const isNotificationsPage = window.location.pathname.includes("notifications.html");
+
+    if (isNotificationsPage) {
+      localStorage.setItem("chemvibe_last_read_count", totalCount);
+      if (badge) badge.hidden = true;
+    } else {
+      const lastReadCount = parseInt(localStorage.getItem("chemvibe_last_read_count") || "0", 10);
+      const unreadCount = totalCount - lastReadCount;
+
+      if (badge) {
+        if (unreadCount > 0) {
+          badge.textContent = unreadCount;
+          badge.hidden = false;
+        } else {
+          badge.hidden = true;
+        }
+      }
+    }
+
+    if (container) {
+      container.innerHTML = "";
+      if (notifications.length === 0) {
+        if (emptyState) emptyState.hidden = false;
+        return;
+      }
+      if (emptyState) emptyState.hidden = true;
+
+      notifications.forEach((notif) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <span class="tag">${escapeHTML(notif.date || "Announcement")}</span>
+          <h3>${escapeHTML(notif.title)}</h3>
+          <p>${escapeHTML(notif.message)}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+  } catch (error) {
+    console.error("Error loading notifications:", error);
+  }
+}
+
+loadDataFromFirestore();
+loadNotificationsFromFirestore();
