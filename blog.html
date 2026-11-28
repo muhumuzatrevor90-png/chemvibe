@@ -14,28 +14,28 @@
       <a href="index.html">Library</a>
       <a class="active" href="blog.html">Blog</a>
       <a href="classes.html">Live classes</a>
-      <a href="about-us.html">About Us</a>
       <a href="notifications.html">Notifications <span id="notification-badge" class="badge" hidden>0</span></a>
+      <a href="messages.html" id="nav-messages" hidden>Messages <span id="messages-badge" class="badge" hidden>0</span></a>
       <a href="profile.html">Profile</a>
       <a href="admin.html" id="nav-admin" hidden>Admin</a>
-      <a class="nav-button" href="signin.html">Sign in</a>
+      <a class="nav-button" href="signin.html" id="nav-signin-out">Sign in</a>
     </nav>
   </header>
 
   <main class="container">
     <section class="page-hero">
-      <span class="eyebrow">ARTICLES & TIPS</span>
-      <h1>Chemistry Blog</h1>
-      <p>Read conceptual breakdowns, study tips, and updates from your instructor.</p>
+      <span class="eyebrow">CHEMISTRY INSIGHTS</span>
+      <h1>ChemVibe Blog & Articles</h1>
+      <p>Read study tips, exam strategies, and deep dives into chemistry concepts.</p>
     </section>
 
-    <section class="panel">
-      <h2>Published Articles</h2>
+    <div class="panel">
+      <h2>Recent Articles</h2>
       <div id="blog-list"></div>
-      <div id="blog-empty" hidden style="text-align: center; padding: 20px;">
-        <p class="muted">No blog articles published yet.</p>
+      <div id="blog-empty" class="panel" style="text-align: center; border: none; box-shadow: none;" hidden>
+        <p class="muted">No blog posts available right now.</p>
       </div>
-    </section>
+    </div>
   </main>
 
   <footer class="footer">
