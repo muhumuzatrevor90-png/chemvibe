@@ -5,9 +5,7 @@ import {
 import { 
   collection, 
   getDocs,
-  addDoc,
-  query,
-  orderBy
+  addDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const byId = (id) => document.getElementById(id);
@@ -394,112 +392,4 @@ function renderBlog() {
   if (emptyState) emptyState.hidden = true;
 
   blogPosts.forEach((post) => {
-    const card = document.createElement("div");
-    card.className = "card blog-card";
-    card.innerHTML = `
-      <span class="muted">${escapeHTML(post.date || "")}</span>
-      <h3>${escapeHTML(post.title)}</h3>
-      <p>${escapeHTML(post.summary)}</p>
-      ${post.link && post.link !== "#" ? `<a class="text-link" href="${post.link}" target="_blank">Read article →</a>` : ""}
-    `;
-    container.appendChild(card);
-  });
-}
-
-function renderClasses() {
-  const container = byId("classes-list");
-  const emptyState = byId("classes-empty");
-  if (!container) return;
-
-  container.innerHTML = "";
-  if (liveClasses.length === 0) {
-    if (emptyState) emptyState.hidden = false;
-    return;
-  }
-  if (emptyState) emptyState.hidden = true;
-
-  liveClasses.forEach((cls) => {
-    const isOfficeHours = cls.sessionType === "office-hours";
-    const card = document.createElement("div");
-    card.className = "card";
-    if (isOfficeHours) {
-      card.style.borderLeft = "4px solid #d97706";
-    }
-    card.innerHTML = `
-      <div>
-        <span class="tag" style="${isOfficeHours ? 'background: #fef3c7; color: #b45309;' : ''}">
-          ${isOfficeHours ? '🕒 Weekly Office Hours (Open Q&A)' : '🎓 Live Lecture'}
-        </span>
-        <h3 style="margin-top: 8px;">${escapeHTML(cls.title)}</h3>
-        <p><strong>Host:</strong> ${escapeHTML(cls.host)}</p>
-        <p><strong>Schedule:</strong> ${escapeHTML(cls.time)}</p>
-        ${cls.notes ? `<p class="muted" style="font-size: 0.9rem; margin-top: 4px;">${escapeHTML(cls.notes)}</p>` : ""}
-      </div>
-      <a class="button primary" href="${cls.link}" target="_blank" style="margin-top: 12px; ${isOfficeHours ? 'background-color: #d97706;' : ''}">
-        ${isOfficeHours ? 'Drop Into Office Hours' : 'Join Live Session'}
-      </a>
-    `;
-    container.appendChild(card);
-  });
-}
-
-async function loadNotificationsFromFirestore() {
-  const container = byId("notifications-list");
-  const emptyState = byId("notifications-empty");
-  const badge = byId("notification-badge");
-
-  if (!configured || !db) return;
-
-  try {
-    const snap = await getDocs(collection(db, "notifications"));
-    let notifications = [];
-    snap.forEach((doc) => {
-      notifications.push({ id: doc.id, ...doc.data() });
-    });
-
-    const totalCount = notifications.length;
-    const isNotificationsPage = window.location.pathname.includes("notifications.html");
-
-    if (isNotificationsPage) {
-      localStorage.setItem("chemvibe_last_read_count", totalCount);
-      if (badge) badge.hidden = true;
-    } else {
-      const lastReadCount = parseInt(localStorage.getItem("chemvibe_last_read_count") || "0", 10);
-      const unreadCount = totalCount - lastReadCount;
-
-      if (badge) {
-        if (unreadCount > 0) {
-          badge.textContent = unreadCount;
-          badge.hidden = false;
-        } else {
-          badge.hidden = true;
-        }
-      }
-    }
-
-    if (container) {
-      container.innerHTML = "";
-      if (notifications.length === 0) {
-        if (emptyState) emptyState.hidden = false;
-        return;
-      }
-      if (emptyState) emptyState.hidden = true;
-
-      notifications.forEach((notif) => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <span class="tag">${escapeHTML(notif.date || "Announcement")}</span>
-          <h3>${escapeHTML(notif.title)}</h3>
-          <p>${escapeHTML(notif.message)}</p>
-        `;
-        container.appendChild(card);
-      });
-    }
-  } catch (error) {
-    console.error("Error loading notifications:", error);
-  }
-}
-
-loadDataFromFirestore();
-loadNotificationsFromFirestore();
+    const card = document
