@@ -7,6 +7,7 @@ import {
   getDocs,
   addDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const byId = (id) => document.getElementById(id);
 const ADMIN_EMAILS = ["muhumuzatrevormbabazi@gmail.com"];
@@ -28,20 +29,30 @@ if (configured && auth) {
     const signoutBtn = byId("signout-button");
     const profileSummary = byId("profile-summary");
     const passwordSection = byId("password-section");
+    const nameSection = byId("name-section");
 
     if (user) {
-      const displayLabel = user.displayName ? `${user.displayName} (${user.email})` : user.email;
+      const nameDisplay = user.displayName ? user.displayName : "Not set";
+      const displayLabel = `${nameDisplay} (${user.email})`;
+      
       if (adminLink) adminLink.hidden = false;
       if (profileAdminLink) profileAdminLink.hidden = false;
       if (signoutBtn) signoutBtn.hidden = false;
       if (profileSummary) profileSummary.textContent = `Signed in as: ${displayLabel}`;
       if (passwordSection) passwordSection.hidden = false;
+      if (nameSection) nameSection.hidden = false;
+
+      const nameInput = byId("profile-new-name");
+      if (nameInput && user.displayName && !nameInput.value) {
+        nameInput.value = user.displayName;
+      }
     } else {
       if (adminLink) adminLink.hidden = true;
       if (profileAdminLink) profileAdminLink.hidden = true;
       if (signoutBtn) signoutBtn.hidden = true;
       if (profileSummary) profileSummary.textContent = "Not signed in.";
       if (passwordSection) passwordSection.hidden = true;
+      if (nameSection) nameSection.hidden = true;
     }
   });
 
@@ -56,6 +67,35 @@ if (configured && auth) {
       }
     });
   }
+}
+
+// --- Profile Name Update Handling ---
+const profileNameForm = byId("profile-name-form");
+if (profileNameForm) {
+  profileNameForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const newName = byId("profile-new-name").value.trim();
+    const status = byId("name-status");
+
+    if (!configured || !auth.currentUser) {
+      status.textContent = "You must be signed in to update your name.";
+      return;
+    }
+
+    try {
+      status.textContent = "Saving name...";
+      await updateProfile(auth.currentUser, {
+        displayName: newName
+      });
+      status.textContent = "Student name updated successfully!";
+      setTimeout(() => {
+        window.location.reload();
+      }, 800);
+    } catch (error) {
+      console.error("Name update error:", error);
+      status.textContent = `Failed to update name: ${error.message}`;
+    }
+  });
 }
 
 // --- Password Change Handling ---
@@ -464,7 +504,7 @@ async function loadNotificationsFromFirestore() {
       localStorage.setItem("chemvibe_last_read_count", totalCount);
       if (badge) badge.hidden = true;
     } else {
-      const lastReadCount = parseInt(localStorage.getItem("chemvibe_last_read_count") || "0", 10);
+      const lastReadCount = parseInt(localStorage.getItem("chemvibe_last_read_count"] || "0", 10);
       const unreadCount = totalCount - lastReadCount;
 
       if (badge) {
@@ -485,6 +525,16 @@ async function loadNotificationsFromFirestore() {
       }
       if (emptyState) emptyState.hidden = true;
 
+      notifications.notifications.forEach?.((notif) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <span class="tag">${escapeHTML(notif.date || "Announcement")}</span>
+          <h3>${escapeHTML(notif.title)}</h3>
+          <p>${escapeHTML(notif.message)}</p>
+        `;
+        container.appendChild(card);
+      });
       notifications.forEach((notif) => {
         const card = document.createElement("div");
         card.className = "card";
