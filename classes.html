@@ -14,28 +14,28 @@
       <a href="index.html">Library</a>
       <a href="blog.html">Blog</a>
       <a class="active" href="classes.html">Live classes</a>
-      <a href="about-us.html">About Us</a>
       <a href="notifications.html">Notifications <span id="notification-badge" class="badge" hidden>0</span></a>
+      <a href="messages.html" id="nav-messages" hidden>Messages <span id="messages-badge" class="badge" hidden>0</span></a>
       <a href="profile.html">Profile</a>
       <a href="admin.html" id="nav-admin" hidden>Admin</a>
-      <a class="nav-button" href="signin.html">Sign in</a>
+      <a class="nav-button" href="signin.html" id="nav-signin-out">Sign in</a>
     </nav>
   </header>
 
   <main class="container">
     <section class="page-hero">
-      <span class="eyebrow">INTERACTIVE SESSIONS</span>
-      <h1>Live Classes</h1>
-      <p>Join scheduled tutoring sessions, homework walk-throughs, and live Q&As.</p>
+      <span class="eyebrow">LIVE SESSIONS</span>
+      <h1>Live Lectures & Office Hours</h1>
+      <p>Join interactive live teaching sessions and drop-in office hours for personal Q&A.</p>
     </section>
 
-    <section class="panel">
-      <h2>Upcoming & Active Sessions</h2>
+    <div class="panel">
+      <h2>Scheduled Sessions</h2>
       <div id="classes-list"></div>
-      <div id="classes-empty" hidden style="text-align: center; padding: 20px;">
-        <p class="muted">No live classes scheduled at the moment.</p>
+      <div id="classes-empty" class="panel" style="text-align: center; border: none; box-shadow: none;" hidden>
+        <p class="muted">No live classes or office hours scheduled at the moment.</p>
       </div>
-    </section>
+    </div>
   </main>
 
   <footer class="footer">
