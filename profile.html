@@ -15,6 +15,7 @@
       <a href="blog.html">Blog</a>
       <a href="classes.html">Live classes</a>
       <a href="notifications.html">Notifications <span id="notification-badge" class="badge" hidden>0</span></a>
+      <a href="messages.html" id="nav-messages" hidden>Messages <span id="messages-badge" class="badge" hidden>0</span></a>
       <a class="active" href="profile.html">Profile</a>
       <a href="admin.html" id="nav-admin" hidden>Admin</a>
       <a class="nav-button" href="signin.html" id="nav-signin-out">Sign in</a>
@@ -23,42 +24,76 @@
 
   <main class="container">
     <section class="page-hero">
-      <span class="eyebrow">STUDENT ACCOUNT</span>
-      <h1>Your Profile & Settings</h1>
-      <p>Manage your account details, saved bookmarks, and security.</p>
+      <span class="eyebrow">CHEMVIBE STUDENT PORTAL</span>
+      <h1>Account Settings & Profile</h1>
+      <p id="welcome-banner" style="color: #38bdf8; font-weight: 600; margin-top: 6px;" hidden></p>
     </section>
 
-    <div class="panel">
-      <h2>Account Information</h2>
-      <p id="profile-summary" class="muted" style="margin-top: 8px;">Loading profile...</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 22px; align-items: start;">
+      <!-- Left Column: Account Settings -->
+      <div class="panel">
+        <h2>Account Information</h2>
+        <p id="profile-summary" class="muted" style="margin-top: 8px; margin-bottom: 16px;">Loading profile...</p>
+
+        <!-- Avatar & Identity Summary -->
+        <div style="display: flex; align-items: center; gap: 16px; margin: 18px 0; padding-bottom: 18px; border-bottom: 1px solid #e2e8f0;">
+          <img id="profile-avatar-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z'/%3E%3C/svg%3E" alt="Profile Picture" style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid #0284c7; background: #f1f5f9;">
+          <div>
+            <h3 id="profile-display-name" style="margin: 0; font-size: 1.15rem;">Loading...</h3>
+            <p id="profile-handle" class="muted" style="margin: 2px 0; font-size: 0.85rem;">@student</p>
+            <p id="profile-email-display" class="muted" style="margin: 0 0 8px; font-size: 0.82rem;"></p>
+            <input type="file" id="avatar-upload" accept="image/*" hidden>
+            <button type="button" id="change-picture-btn" class="button secondary" style="padding: 6px 12px; font-size: 0.82rem;">Change Picture</button>
+            <p id="picture-status" class="muted" style="font-size: 0.8rem; margin-top: 4px;"></p>
+          </div>
+        </div>
+
+        <!-- Update Username -->
+        <form id="profile-name-form" style="margin-bottom: 20px;">
+          <label class="field-label">Update Username
+            <input class="field" id="profile-new-name" type="text" required placeholder="Enter your username">
+          </label>
+          <button class="button primary" type="submit" style="width: 100%;">Save Username</button>
+          <p id="name-status" class="muted" style="margin-top: 6px; font-size: 0.85rem;"></p>
+        </form>
+
+        <!-- Update Password -->
+        <form id="password-change-form">
+          <label class="field-label">New Password (min. 6 characters)
+            <input class="field" id="new-password" type="password" autocomplete="new-password" required placeholder="Enter new password...">
+          </label>
+          <label class="field-label">Confirm New Password
+            <input class="field" id="confirm-password" type="password" autocomplete="new-password" required placeholder="Re-enter new password...">
+          </label>
+          <button class="button primary" type="submit" style="width: 100%;">Update Password</button>
+          <p id="password-status" class="muted" style="margin-top: 6px; font-size: 0.85rem;"></p>
+        </form>
+      </div>
+
+      <!-- Right Column: Guidelines & Navigation -->
+      <div class="panel">
+        <h2>Guidelines & Navigation</h2>
+        <ul style="list-style: none; margin-top: 16px; display: flex; flex-direction: column; gap: 16px; font-size: 0.92rem; color: #334155;">
+          <li>
+            <strong>👤 Username & Identity:</strong> Updating your username changes how your name appears in your welcome banner and private messages with your instructor.
+          </li>
+          <li>
+            <strong>🖼️ Profile Picture:</strong> Click <em>Change Picture</em> to upload a square photo so your instructor can easily recognize your account.
+          </li>
+          <li>
+            <strong>🔒 Private Q&A Messaging:</strong> Questions sent on any Chemistry Library resource are <strong>100% private</strong>—only you and the instructor can view or reply to your thread.
+          </li>
+          <li>
+            <strong>🔑 Password Security:</strong> Use at least 6 characters. If you haven't signed in recently, sign out and log back in before changing your password.
+          </li>
+          <li>
+            <strong>📱 Mobile Navigation:</strong> Tap the top-right three-dash menu icon (<code>☰</code>) on your phone to switch between Library, Blog, Live Classes, Notifications, and Profile.
+          </li>
+        </ul>
+      </div>
     </div>
 
-    <!-- Update Student Name Panel -->
-    <div class="panel" id="name-section" hidden>
-      <h2>Update Student Name</h2>
-      <p class="muted">Set the name that will appear when you post questions in resource discussions.</p>
-      <form id="profile-name-form" style="margin-top: 16px;">
-        <label class="field-label">Student Name
-          <input class="field" id="profile-new-name" type="text" required placeholder="e.g. Timothy">
-        </label>
-        <button class="button primary" type="submit" style="margin-top: 10px;">Save Name</button>
-      </form>
-      <p id="name-status" class="muted" style="margin-top: 8px; font-size: 0.88rem;"></p>
-    </div>
-
-    <!-- Password Change Panel -->
-    <div class="panel" id="password-section" hidden>
-      <h2>Change Password</h2>
-      <form id="password-change-form" style="margin-top: 16px;">
-        <label class="field-label">New Password (min. 6 characters)
-          <input class="field" id="new-password" type="password" required placeholder="••••••••">
-        </label>
-        <button class="button primary" type="submit" style="margin-top: 10px;">Update password</button>
-      </form>
-      <p id="password-status" class="muted" style="margin-top: 8px; font-size: 0.88rem;"></p>
-    </div>
-
-    <div class="panel">
+    <div class="panel" style="margin-top: 24px;">
       <h2>Saved Bookmarks</h2>
       <div id="bookmarked-list" style="margin-top: 12px;"></div>
       <p id="bookmarked-empty" class="muted">No bookmarked resources yet. Click 'Save' on any resource card in the library.</p>
