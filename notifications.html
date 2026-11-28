@@ -14,28 +14,28 @@
       <a href="index.html">Library</a>
       <a href="blog.html">Blog</a>
       <a href="classes.html">Live classes</a>
-      <a href="about-us.html">About Us</a>
       <a class="active" href="notifications.html">Notifications <span id="notification-badge" class="badge" hidden>0</span></a>
+      <a href="messages.html" id="nav-messages" hidden>Messages <span id="messages-badge" class="badge" hidden>0</span></a>
       <a href="profile.html">Profile</a>
       <a href="admin.html" id="nav-admin" hidden>Admin</a>
-      <a class="nav-button" href="signin.html">Sign in</a>
+      <a class="nav-button" href="signin.html" id="nav-signin-out">Sign in</a>
     </nav>
   </header>
 
   <main class="container">
     <section class="page-hero">
-      <span class="eyebrow">UPDATES</span>
-      <h1>Notifications</h1>
-      <p>Real-time announcements, schedule updates, and alerts from your instructor.</p>
+      <span class="eyebrow">UPDATES & ALERTS</span>
+      <h1>Notifications & Announcements</h1>
+      <p>Stay up to date with new resources, live class schedules, and platform announcements.</p>
     </section>
 
-    <section class="panel">
+    <div class="panel">
       <h2>Recent Announcements</h2>
       <div id="notifications-list"></div>
-      <div id="notifications-empty" hidden style="text-align: center; padding: 20px;">
-        <p class="muted">You’re all caught up. New updates will appear here when posted.</p>
+      <div id="notifications-empty" class="panel" style="text-align: center; border: none; box-shadow: none;" hidden>
+        <p class="muted">No notifications right now.</p>
       </div>
-    </section>
+    </div>
   </main>
 
   <footer class="footer">
